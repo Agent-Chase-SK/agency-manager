@@ -5,6 +5,7 @@
 package cz.muni.fi.pv168.agencymanager.manager;
 
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
+import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,12 +13,16 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  *
  * @author Jakub Suslik
  */
 public class AgentManagerTest {
+    private AgentManager manager;
     
     public AgentManagerTest() {
     }
@@ -32,24 +37,54 @@ public class AgentManagerTest {
     
     @Before
     public void setUp() {
+        manager = new AgentManagerImpl();
     }
     
     @After
     public void tearDown() {
     }
-
-    /**
-     * Test of createAgent method, of class AgentManager.
-     */
-    @Test
-    public void testCreateAgent() {
-        System.out.println("createAgent");
-        Agent agent = null;
-        AgentManager instance = new AgentManagerImpl();
-        instance.createAgent(agent);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    
+    private Agent createAgentBond() {
+        Agent agent = new Agent();
+        agent.setCodeName("007");
+        agent.setStatus(AgentStatus.ACTIVE);
+        return agent;
     }
+    
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+    
+    // createAgent tests
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateAgentNullBody() {
+        manager.createAgent(null);
+    }
+    
+    @Test
+    public void testCreateAgentNullName() {
+        Agent agent = createAgentBond();
+        agent.setCodeName(null);
+        expectedException.expect(IllegalArgumentException.class);
+        manager.createAgent(agent);
+    }
+    
+    @Test
+    public void testCreateAgentNullStatus() {
+        Agent agent = createAgentBond();
+        agent.setStatus(null);
+        expectedException.expect(IllegalArgumentException.class);
+        manager.createAgent(agent);
+    }
+    
+    @Test
+    public void testCreateAgentGotId() {
+        Agent agent = createAgentBond();
+        manager.createAgent(agent);
+        Long id = agent.getId();
+        assertThat(id).isNotNull();
+    }
+    
+    //WIP
 
     /**
      * Test of updateAgent method, of class AgentManager.
