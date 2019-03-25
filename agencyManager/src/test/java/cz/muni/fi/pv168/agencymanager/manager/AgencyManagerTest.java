@@ -6,13 +6,16 @@ package cz.muni.fi.pv168.agencymanager.manager;
 
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
+import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  *
@@ -20,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class AgencyManagerTest {
 
-    private AgencyManagerImpl instance;
+    private AgencyManager instance;
 
     public AgencyManagerTest() {
     }
@@ -35,7 +38,7 @@ public class AgencyManagerTest {
     
     @Before
     public void setUp() {
-        AgencyManagerImpl instance = new AgencyManagerImpl();
+        instance = new AgencyManagerImpl();
     }
     
     @After
@@ -44,7 +47,7 @@ public class AgencyManagerTest {
 
     private Agent createAgentBond() {
         Agent agent = new Agent();
-        agent.setId(4574);
+        agent.setId(Long.valueOf(4574));
         agent.setCodeName("007");
         agent.setStatus(AgentStatus.ACTIVE);
         return agent;
@@ -52,7 +55,7 @@ public class AgencyManagerTest {
 
     private Mission createMissionSample() {
         Mission mission = new Mission();
-        mission.setId(45250);
+        mission.setId(Long.valueOf(45250));
         mission.setCodeName("mission");
         return mission;
     }
@@ -82,7 +85,7 @@ public class AgencyManagerTest {
     }
 
     @Test
-    public void assignAgentToMissionNullAgent(){
+    public void assignAgentToMissionNullMission(){
         Mission mission = null;
         expectedException.expect(IllegalArgumentException.class);
         ((AgencyManagerImpl) instance).assignAgentToMission(this.createAgentBond(), null);
@@ -92,25 +95,25 @@ public class AgencyManagerTest {
     public void findMissionsWithAgentTest(){
         Agent agent = this.createAgentBond();
         List<Mission> missions = instance.findMissionsWithAgent(agent);
-        assertThat(missions.isEmpty());
+        assertThat(missions).isEmpty();
 
         Mission mission = this.createMissionSample();
         instance.assignAgentToMission(agent, mission);
-        assertThat(instance.findMissionsWithAgent(agent).containsOnly(mission));
+        assertThat(instance.findMissionsWithAgent(agent)).containsOnly(mission);
     }
 
     @Test
     public void findAgentOnMissionTest(){
         Mission mission = this.createMissionSample();
         expectedException.expect(IllegalArgumentException.class);
-        Agent agent = instance.findAgentOnMission(mission)
+        Agent agent = instance.findAgentOnMission(mission);
     }
 
     @Test
     public void assignAgentToMissionTest(){
         Agent agent = this.createAgentBond();
         Agent secondAgent = new Agent();
-        agent.setId(2);
+        agent.setId(Long.valueOf(2));
         secondAgent.setCodeName("009");
         secondAgent.setStatus(AgentStatus.ACTIVE);
         Mission mission = this.createMissionSample();
@@ -118,6 +121,20 @@ public class AgencyManagerTest {
         instance.assignAgentToMission(agent,mission);
         expectedException.expect(IllegalArgumentException.class);
         instance.assignAgentToMission(secondAgent,mission);
+    }
+
+    public class AgencyManagerImpl implements AgencyManager {
+
+        public List<Mission> findMissionsWithAgent(Agent agent) {
+            return null;
+        }
+
+        public Agent findAgentOnMission(Mission mission) {
+            return null;
+        }
+
+        public void assignAgentToMission(Agent agent, Mission mission) {
+        }
     }
 
 }
