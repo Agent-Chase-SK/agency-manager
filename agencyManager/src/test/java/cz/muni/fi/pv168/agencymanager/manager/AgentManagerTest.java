@@ -13,8 +13,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 import static org.assertj.core.api.Assertions.*;
 
 /**
@@ -51,12 +49,18 @@ public class AgentManagerTest {
         return agent;
     }
     
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    private Agent createAgentNoname() {
+        Agent agent = new Agent();
+        agent.setCodeName("null");
+        agent.setStatus(AgentStatus.MIA);
+        return agent;
+    }
     
-    // createAgent tests
+    /**
+     * Tests of createAgent method, of class AgentManager.
+     */
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateAgentNullBody() {
+    public void testCreateAgentNullAgent() {
         manager.createAgent(null);
     }
     
@@ -64,16 +68,16 @@ public class AgentManagerTest {
     public void testCreateAgentNullName() {
         Agent agent = createAgentBond();
         agent.setCodeName(null);
-        expectedException.expect(IllegalArgumentException.class);
-        manager.createAgent(agent);
+        assertThatThrownBy(() -> manager.createAgent(agent))
+                .isInstanceOf(IllegalArgumentException.class);
     }
     
     @Test
     public void testCreateAgentNullStatus() {
         Agent agent = createAgentBond();
         agent.setStatus(null);
-        expectedException.expect(IllegalArgumentException.class);
-        manager.createAgent(agent);
+        assertThatThrownBy(() -> manager.createAgent(agent))
+                .isInstanceOf(IllegalArgumentException.class);
     }
     
     @Test
@@ -84,61 +88,144 @@ public class AgentManagerTest {
         assertThat(id).isNotNull();
     }
     
-    //WIP
-
-    /**
-     * Test of updateAgent method, of class AgentManager.
-     */
     @Test
-    public void testUpdateAgent() {
-        System.out.println("updateAgent");
-        Agent agent = null;
-        AgentManager instance = new AgentManagerImpl();
-        instance.updateAgent(agent);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testCreateAgentWithId() {
+        Agent agent = createAgentBond();
+        agent.setId(Long.valueOf(0));
+        assertThatThrownBy(() -> manager.createAgent(agent))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    @Test
+    public void testCreateAgentCreatesCopy() {
+        Agent agent = createAgentBond();
+        manager.createAgent(agent);
+        assertThat(manager.findAgentById(agent.getId()))
+                .isNotSameAs(agent)
+                .isEqualToComparingFieldByField(agent);
     }
 
     /**
-     * Test of deleteAgent method, of class AgentManager.
+     * Tests of updateAgent method, of class AgentManager.
      */
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateAgentNullAgent() {
+        manager.updateAgent(null);
+    }
+    
     @Test
-    public void testDeleteAgent() {
-        System.out.println("deleteAgent");
-        Agent agent = null;
-        AgentManager instance = new AgentManagerImpl();
-        instance.deleteAgent(agent);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testUpdateAgentNotCreated() {
+        Agent agent = createAgentBond();
+        assertThatThrownBy(() -> manager.updateAgent(agent))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    private void testUpdateAgentOperation(Operation<Agent> updateOperation) {
+        Agent agent1 = createAgentBond();
+        Agent agent2 = createAgentNoname();
+        
+        manager.createAgent(agent1);
+        manager.createAgent(agent2);
+        
+        updateOperation.callOn(agent2);
+        
+        manager.updateAgent(agent2);
+        
+        assertThat(manager.findAgentById(agent1.getId()))
+                .isEqualToComparingFieldByField(agent1);
+        assertThat(manager.findAgentById(agent2.getId()))
+                .isEqualToComparingFieldByField(agent2);
+    }
+    
+    @Test
+    public void testUpdateAgentCodeName() {
+        testUpdateAgentOperation((agent) -> agent.setCodeName("007+1"));
+    }
+    
+    @Test
+    public void testUpdateAgentStatus() {
+        testUpdateAgentOperation((agent) -> agent.setStatus(AgentStatus.KIA));
     }
 
     /**
-     * Test of findAgentById method, of class AgentManager.
+     * Tests of deleteAgent method, of class AgentManager.
      */
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteAgentNullAgent() {
+        manager.deleteAgent(null);
+    }
+    
     @Test
-    public void testFindAgentById() {
-        System.out.println("findAgentById");
-        Long id = null;
-        AgentManager instance = new AgentManagerImpl();
-        Agent expResult = null;
-        Agent result = instance.findAgentById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testDeleteAgentNotCreated() {
+        Agent agent = createAgentBond();
+        assertThatThrownBy(() -> manager.deleteAgent(agent))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    @Test
+    public void testDeleteAgentOnlyOne() {
+        Agent agent1 = createAgentBond();
+        Agent agent2 = createAgentNoname();
+        
+        manager.createAgent(agent1);
+        manager.createAgent(agent2);
+        
+        assertThat(agent1.getId()).isNotNull();
+        assertThat(agent2.getId()).isNotNull();
+        
+        manager.deleteAgent(agent2);
+        
+        assertThat(agent1.getId()).isNotNull();
+        assertThat(agent2.getId()).isNull();
     }
 
     /**
-     * Test of findAllAgents method, of class AgentManager.
+     * Tests of findAgentById method, of class AgentManager.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testFindAgentByIdNullId() {
+        manager.findAgentById(null);
+    }
+    
+    @Test
+    public void testFindAgentByIdWrongId() {
+        Agent agent = createAgentBond();
+        manager.createAgent(agent);
+        assertThatThrownBy(() -> manager.findAgentById(agent.getId()+1))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    @Test
+    public void testFindAgentByIdReturnRightOne() {
+        Agent agent1 = createAgentBond();
+        Agent agent2 = createAgentNoname();
+        
+        manager.createAgent(agent1);
+        manager.createAgent(agent2);
+        
+        Agent agentF = manager.findAgentById(agent2.getId());
+        assertThat(agentF).isEqualToComparingFieldByField(agent2);
+    }
+
+    /**
+     * Tests of findAllAgents method, of class AgentManager.
      */
     @Test
-    public void testFindAllAgents() {
-        System.out.println("findAllAgents");
-        AgentManager instance = new AgentManagerImpl();
-        List<Agent> expResult = null;
-        List<Agent> result = instance.findAllAgents();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testFindAllAgentsEmpty() {
+        assertThat(manager.findAllAgents()).isEmpty();
+    }
+    
+    @Test
+    public void testFindAllAgentsAllAndSame() {
+        Agent agent1 = createAgentBond();
+        Agent agent2 = createAgentNoname();
+        
+        manager.createAgent(agent1);
+        manager.createAgent(agent2);
+        
+        assertThat(manager.findAllAgents())
+                .usingFieldByFieldElementComparator()
+                .containsOnly(agent1,agent2);
     }
 
     public class AgentManagerImpl implements AgentManager {
