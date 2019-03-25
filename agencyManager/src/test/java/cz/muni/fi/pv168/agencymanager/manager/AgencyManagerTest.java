@@ -19,7 +19,9 @@ import static org.junit.Assert.*;
  * @author Jakub Suslik
  */
 public class AgencyManagerTest {
-    
+
+    private AgencyManagerImpl instance;
+
     public AgencyManagerTest() {
     }
     
@@ -33,68 +35,89 @@ public class AgencyManagerTest {
     
     @Before
     public void setUp() {
+        AgencyManagerImpl instance = new AgencyManagerImpl();
     }
     
     @After
     public void tearDown() {
     }
 
-    /**
-     * Test of findMissionsWithAgent method, of class AgencyManager.
-     */
+    private Agent createAgentBond() {
+        Agent agent = new Agent();
+        agent.setId(4574);
+        agent.setCodeName("007");
+        agent.setStatus(AgentStatus.ACTIVE);
+        return agent;
+    }
+
+    private Mission createMissionSample() {
+        Mission mission = new Mission();
+        mission.setId(45250);
+        mission.setCodeName("mission");
+        return mission;
+    }
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
-    public void testFindMissionsWithAgent() {
-        System.out.println("findMissionsWithAgent");
+    public void testFindMissionsWithlAgentNullAgent(){
         Agent agent = null;
-        AgencyManager instance = new AgencyManagerImpl();
-        List<Mission> expResult = null;
+        expectedException.expect(IllegalArgumentException.class);
         List<Mission> result = instance.findMissionsWithAgent(agent);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of findAgentOnMission method, of class AgencyManager.
-     */
     @Test
-    public void testFindAgentOnMission() {
-        System.out.println("findAgentOnMission");
+    public void testFindAgentOnMissionNullMission(){
         Mission mission = null;
-        AgencyManager instance = new AgencyManagerImpl();
-        Agent expResult = null;
-        Agent result = instance.findAgentOnMission(mission);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        expectedException.expect(IllegalArgumentException.class);
+        Agent agent = instance.findAgentOnMission(mission);
     }
 
-    /**
-     * Test of assignAgentToMission method, of class AgencyManager.
-     */
     @Test
-    public void testAssignAgentToMission() {
-        System.out.println("assignAgentToMission");
+    public void assignAgentToMissionNullAgent(){
         Agent agent = null;
+        expectedException.expect(IllegalArgumentException.class);
+        ((AgencyManagerImpl) instance).assignAgentToMission(agent,this.createMissionSample());
+    }
+
+    @Test
+    public void assignAgentToMissionNullAgent(){
         Mission mission = null;
-        AgencyManager instance = new AgencyManagerImpl();
+        expectedException.expect(IllegalArgumentException.class);
+        ((AgencyManagerImpl) instance).assignAgentToMission(this.createAgentBond(), null);
+    }
+
+    @Test
+    public void findMissionsWithAgentTest(){
+        Agent agent = this.createAgentBond();
+        List<Mission> missions = instance.findMissionsWithAgent(agent);
+        assertThat(missions.isEmpty());
+
+        Mission mission = this.createMissionSample();
         instance.assignAgentToMission(agent, mission);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertThat(instance.findMissionsWithAgent(agent).containsOnly(mission));
     }
 
-    public class AgencyManagerImpl implements AgencyManager {
-
-        public List<Mission> findMissionsWithAgent(Agent agent) {
-            return null;
-        }
-
-        public Agent findAgentOnMission(Mission mission) {
-            return null;
-        }
-
-        public void assignAgentToMission(Agent agent, Mission mission) {
-        }
+    @Test
+    public void findAgentOnMissionTest(){
+        Mission mission = this.createMissionSample();
+        expectedException.expect(IllegalArgumentException.class);
+        Agent agent = instance.findAgentOnMission(mission)
     }
-    
+
+    @Test
+    public void assignAgentToMissionTest(){
+        Agent agent = this.createAgentBond();
+        Agent secondAgent = new Agent();
+        agent.setId(2);
+        secondAgent.setCodeName("009");
+        secondAgent.setStatus(AgentStatus.ACTIVE);
+        Mission mission = this.createMissionSample();
+
+        instance.assignAgentToMission(agent,mission);
+        expectedException.expect(IllegalArgumentException.class);
+        instance.assignAgentToMission(secondAgent,mission);
+    }
+
 }
