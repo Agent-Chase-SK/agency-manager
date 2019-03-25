@@ -12,7 +12,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.*;
 
 /**
@@ -84,8 +83,7 @@ public class AgentManagerTest {
     public void testCreateAgentGotId() {
         Agent agent = createAgentBond();
         manager.createAgent(agent);
-        Long id = agent.getId();
-        assertThat(id).isNotNull();
+        assertThat(agent.getId()).isNotNull();
     }
     
     @Test
@@ -145,6 +143,24 @@ public class AgentManagerTest {
     @Test
     public void testUpdateAgentStatus() {
         testUpdateAgentOperation((agent) -> agent.setStatus(AgentStatus.KIA));
+    }
+    
+    @Test
+    public void testUpdateAgentNullName() {
+        Agent agent = createAgentBond();
+        manager.createAgent(agent);
+        agent.setCodeName(null);
+        assertThatThrownBy(() -> manager.updateAgent(agent))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    @Test
+    public void testUpdateAgentNullStatus() {
+        Agent agent = createAgentBond();
+        manager.createAgent(agent);
+        agent.setStatus(null);
+        assertThatThrownBy(() -> manager.updateAgent(agent))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
