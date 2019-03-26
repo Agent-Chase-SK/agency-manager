@@ -1,7 +1,3 @@
-/**
- *
- * @author Jakub Suslik
- */
 package cz.muni.fi.pv168.agencymanager.manager;
 
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
@@ -43,11 +39,12 @@ public class AgencyManagerTest {
     
     @After
     public void tearDown() {
+        instance = null;
     }
 
     private Agent createAgentBond() {
         Agent agent = new Agent();
-        agent.setId(Long.valueOf(4574));
+        agent.setId(4574L);
         agent.setCodeName("007");
         agent.setStatus(AgentStatus.ACTIVE);
         return agent;
@@ -55,7 +52,7 @@ public class AgencyManagerTest {
 
     private Mission createMissionSample() {
         Mission mission = new Mission();
-        mission.setId(Long.valueOf(45250));
+        mission.setId(45250L);
         mission.setCodeName("mission");
         return mission;
     }
@@ -64,7 +61,7 @@ public class AgencyManagerTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testFindMissionsWithlAgentNullAgent(){
+    public void testFindMissionsWithAgentNullAgent(){
         Agent agent = null;
         expectedException.expect(IllegalArgumentException.class);
         List<Mission> result = instance.findMissionsWithAgent(agent);
@@ -81,14 +78,14 @@ public class AgencyManagerTest {
     public void assignAgentToMissionNullAgent(){
         Agent agent = null;
         expectedException.expect(IllegalArgumentException.class);
-        ((AgencyManagerImpl) instance).assignAgentToMission(agent,this.createMissionSample());
+        instance.assignAgentToMission(agent,this.createMissionSample());
     }
 
     @Test
     public void assignAgentToMissionNullMission(){
         Mission mission = null;
         expectedException.expect(IllegalArgumentException.class);
-        ((AgencyManagerImpl) instance).assignAgentToMission(this.createAgentBond(), null);
+        instance.assignAgentToMission(this.createAgentBond(), null);
     }
 
     @Test
@@ -113,7 +110,7 @@ public class AgencyManagerTest {
     public void assignAgentToMissionTest(){
         Agent agent = this.createAgentBond();
         Agent secondAgent = new Agent();
-        agent.setId(Long.valueOf(2));
+        agent.setId(2L);
         secondAgent.setCodeName("009");
         secondAgent.setStatus(AgentStatus.ACTIVE);
         Mission mission = this.createMissionSample();
