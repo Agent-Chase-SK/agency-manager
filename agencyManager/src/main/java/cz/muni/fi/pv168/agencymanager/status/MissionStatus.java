@@ -1,7 +1,3 @@
-/**
- *
- * @author Jakub Suslik
- */
 package cz.muni.fi.pv168.agencymanager.status;
 
 /**
@@ -11,6 +7,6 @@ package cz.muni.fi.pv168.agencymanager.status;
 public enum MissionStatus {
     ACTIVE,
     FAILED,
-    SUCCESFUL,
+    SUCCESSFUL,
     SCHEDULED
 }
