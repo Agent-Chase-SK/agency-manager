@@ -39,6 +39,7 @@ public class AgentManagerTest {
     
     @After
     public void tearDown() {
+        manager = null;
     }
     
     private Agent createAgentBond() {

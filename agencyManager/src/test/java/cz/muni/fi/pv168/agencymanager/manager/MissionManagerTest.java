@@ -48,6 +48,7 @@ public class MissionManagerTest {
     
     @After
     public void tearDown() {
+        manager = null;
     }
     
     private static Clock prepareClockMock(ZonedDateTime now) {
@@ -257,6 +258,24 @@ public class MissionManagerTest {
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+    
+    @Test
+    public void testUpdateMissionScheduledYesterday() {
+        Mission mission = createMissionMetro();
+        manager.createMission(mission);
+        mission.setDate(LocalDate.of(2019, Month.JANUARY, 1));
+        assertThatThrownBy(() -> manager.updateMission(mission))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    @Test
+    public void testUpdateMissionNotScheduledTomorrow() {
+        Mission mission = createMissionOrder();
+        manager.createMission(mission);
+        mission.setDate(LocalDate.of(2019, Month.JANUARY, 3));
+        assertThatThrownBy(() -> manager.updateMission(mission))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 
     /**
      * Tests of deleteMission method, of class MissionManager.
@@ -274,7 +293,7 @@ public class MissionManagerTest {
     }
     
     @Test
-    public void testDeleteAgentOnlyOne() {
+    public void testDeleteMissionOnlyOne() {
         Mission mission1 = createMissionMetro();
         Mission mission2 = createMissionOrder();
         
