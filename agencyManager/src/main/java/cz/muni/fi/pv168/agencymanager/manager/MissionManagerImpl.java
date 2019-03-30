@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.agencymanager.manager;
 
+import cz.muni.fi.pv168.agencymanager.common.ServiceException;
+import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
 
@@ -18,7 +20,7 @@ public class MissionManagerImpl implements MissionManager {
 
     @Override
     public void createMission(Mission mission) {
-        // ---TO DO--- check all attributes of the mission
+        validate(mission);
         if (mission.getId() != null) throw new IllegalArgumentException("mission id is already set");
 
         try(Connection conn = dataSource.getConnection();
@@ -32,10 +34,15 @@ public class MissionManagerImpl implements MissionManager {
             st.setString(4,mission.getLocation());
 
             st.executeUpdate();
-            //mission.setId((DBUtils.getId(st.getGeneratedKeys()));       // import DBUtils from Grave Manager???
+            try(ResultSet keys = st.getGeneratedKeys()) {
+                if(keys.next()) {
+                    Long id = keys.getLong(1);
+                    mission.setId(id);
+                }
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace();                            // space to throw own exception?
+            throw new ServiceException("Error when inserting mission into DB",e);
         }
     }
 
@@ -51,7 +58,24 @@ public class MissionManagerImpl implements MissionManager {
 
     @Override
     public Mission findMissionById(Long id) {
-        return null;
+        if(id == null){
+            throw new IllegalArgumentException("Id is null");
+        }
+
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement st = connection.prepareStatement
+                    ("SELECT id, codeName, status, date, location FROM Mission WHERE id = ?")){
+            st.setLong(1,id);
+            try(ResultSet result = st.executeQuery()){
+                if(result.next()){
+                    return dataToMission(result);
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new ServiceException("Error when getting mission with id = " + id, e);
+        }
     }
 
     @Override
@@ -59,10 +83,35 @@ public class MissionManagerImpl implements MissionManager {
         return null;
     }
 
+    private Mission dataToMission(ResultSet resultSet) throws SQLException {
+        Mission mission = new Mission();
+        mission.setId(resultSet.getLong("id"));
+        mission.setCodeName(resultSet.getString("codeName"));
+        mission.setLocation(resultSet.getString("location"));
+        mission.setStatus(toMissionStatus(resultSet.getString("missionStatus")));
+        mission.setDate(toLocalDate(resultSet.getDate("date")));
+        return mission;
+    }
+
     private void validate(Mission mission){
         if(mission == null){
             throw new IllegalArgumentException("mission is null");
-            // --To DO--//
+        }
+        if(mission.getCodeName() == null){
+            throw new ValidationException("Code name is null");
+        }
+        if(mission.getLocation() == null){
+            throw new ValidationException("Location is null");
+        }
+        if(mission.getStatus() == null){
+            throw new ValidationException("Status is null");
+        }
+        if(mission.getDate() == null){
+            throw new ValidationException("Date is null");
+        }
+        LocalDate today = LocalDate.now();              //add clock?     check if this is even necessary
+        if(mission.getDate() != null && mission.getDate().isBefore(today)){
+            throw new ValidationException("mission date is in the past");
         }
 
     }
@@ -73,5 +122,13 @@ public class MissionManagerImpl implements MissionManager {
 
     private static Date toSqlDate(LocalDate localDate) {
         return localDate == null ? null : Date.valueOf(localDate);
+    }
+
+    private static LocalDate toLocalDate(Date date) {
+        return date == null ? null : date.toLocalDate();
+    }
+
+    private static MissionStatus toMissionStatus(String missionStatus){
+        return missionStatus == null ? null : MissionStatus.valueOf(missionStatus);
     }
 }

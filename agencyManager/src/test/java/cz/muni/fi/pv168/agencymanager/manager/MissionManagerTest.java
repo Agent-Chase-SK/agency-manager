@@ -209,7 +209,7 @@ public class MissionManagerTest {
     
     @Test
     public void testUpdateMissionStatus() {
-        testUpdateMissionOperation((mission) -> mission.setStatus(MissionStatus.SUCCESFUL));
+        testUpdateMissionOperation((mission) -> mission.setStatus(MissionStatus.SUCCESSFUL));
     }
     
     @Test
