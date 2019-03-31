@@ -4,6 +4,7 @@
  */
 package cz.muni.fi.pv168.agencymanager.manager;
 
+import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
 import java.time.Clock;
@@ -229,7 +230,7 @@ public class MissionManagerTest {
         manager.createMission(mission);
         mission.setCodeName(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -238,7 +239,7 @@ public class MissionManagerTest {
         manager.createMission(mission);
         mission.setStatus(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -247,7 +248,7 @@ public class MissionManagerTest {
         manager.createMission(mission);
         mission.setLocation(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -256,7 +257,7 @@ public class MissionManagerTest {
         manager.createMission(mission);
         mission.setDate(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -265,7 +266,7 @@ public class MissionManagerTest {
         manager.createMission(mission);
         mission.setDate(LocalDate.of(2019, Month.JANUARY, 1));
         assertThatThrownBy(() -> manager.updateMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -274,7 +275,7 @@ public class MissionManagerTest {
         manager.createMission(mission);
         mission.setDate(LocalDate.of(2019, Month.JANUARY, 3));
         assertThatThrownBy(() -> manager.updateMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     /**

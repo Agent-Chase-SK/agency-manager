@@ -7,14 +7,18 @@ import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MissionManagerImpl implements MissionManager {
 
     private DataSource dataSource;
+    private final Clock clock;
 
-    public MissionManagerImpl(DataSource dataSource) {
+    public MissionManagerImpl(DataSource dataSource, Clock clock) {
+        this.clock = clock;
         this.dataSource = dataSource;
     }
 
@@ -30,8 +34,8 @@ public class MissionManagerImpl implements MissionManager {
 
             st.setString(1, mission.getCodeName());
             st.setString(2,toString(mission.getStatus()));
-            st.setDate(3,toSqlDate(mission.getDate()));
-            st.setString(4,mission.getLocation());
+            st.setDate(3, toSqlDate(mission.getDate()));
+            st.setString(4, mission.getLocation());
 
             st.executeUpdate();
             try(ResultSet keys = st.getGeneratedKeys()) {
@@ -48,11 +52,36 @@ public class MissionManagerImpl implements MissionManager {
 
     @Override
     public void updateMission(Mission mission) {
+        validate(mission);
+        if (mission.getId() == null) throw new IllegalArgumentException("mission id is null");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement st = connection.prepareStatement(
+                    "UPDATE Mission SET codeName = ?, status = ?, date = ?, location = ? WHERE id = ?")){
+            st.setString(1, mission.getCodeName());
+            st.setString(2, toString(mission.getStatus()));
+            st.setDate(3, toSqlDate(mission.getDate()));
+            st.setString(4, mission.getLocation());
+            st.setLong(5, mission.getId());
+            int result = st.executeUpdate();
+            if(result != 1) throw new ServiceException("updated " + result + " instead of 1 mission");
+        } catch (SQLException e) {
+            throw new ServiceException("Error when updating mission in the DB",e);
+        }
 
     }
 
     @Override
     public void deleteMission(Mission mission) {
+        if (mission == null) throw new IllegalArgumentException("mission is null");
+        if (mission.getId() == null) throw new ServiceException("grave id is null");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement st = connection.prepareStatement("DELETE FROM Mission WHERE id = ?")){
+            st.setLong(1, mission.getId());
+            int result = st.executeUpdate();
+            if (result != 1) throw new ServiceException("deleted " + result + " instead of 1 mission");
+        } catch (SQLException e) {
+            throw new ServiceException("Error during deletion mission from db", e);
+        }
 
     }
 
@@ -63,8 +92,8 @@ public class MissionManagerImpl implements MissionManager {
         }
 
         try(Connection connection = dataSource.getConnection();
-            PreparedStatement st = connection.prepareStatement
-                    ("SELECT id, codeName, status, date, location FROM Mission WHERE id = ?")){
+            PreparedStatement st = connection.prepareStatement(
+                    "SELECT id, codeName, status, date, location FROM Mission WHERE id = ?")){
             st.setLong(1,id);
             try(ResultSet result = st.executeQuery()){
                 if(result.next()){
@@ -80,7 +109,20 @@ public class MissionManagerImpl implements MissionManager {
 
     @Override
     public List<Mission> findAllMissions() {
-        return null;
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement st = connection.prepareStatement(
+                    "SELECT id, codeName, status, date, location FROM Mission")){
+            try (ResultSet rs = st.executeQuery()) {
+                List<Mission> result = new ArrayList<>();
+                while (rs.next()) {
+                    result.add(dataToMission(rs));
+                }
+                return result;
+            }
+        } catch (SQLException e) {
+            throw new ServiceException("Error when getting all missions from DB", e);
+        }
+
     }
 
     private Mission dataToMission(ResultSet resultSet) throws SQLException {
@@ -109,7 +151,7 @@ public class MissionManagerImpl implements MissionManager {
         if(mission.getDate() == null){
             throw new ValidationException("Date is null");
         }
-        LocalDate today = LocalDate.now();              //add clock?     check if this is even necessary
+        LocalDate today = LocalDate.now(clock);
         if(mission.getDate() != null && mission.getDate().isBefore(today)){
             throw new ValidationException("mission date is in the past");
         }
