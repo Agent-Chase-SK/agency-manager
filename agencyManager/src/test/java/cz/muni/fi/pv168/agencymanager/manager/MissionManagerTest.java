@@ -4,20 +4,23 @@
  */
 package cz.muni.fi.pv168.agencymanager.manager;
 
+import cz.muni.fi.pv168.agencymanager.common.DBUtils;
+import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
+import javax.sql.DataSource;
+import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
@@ -27,29 +30,29 @@ import static org.assertj.core.api.Assertions.*;
  */
 public class MissionManagerTest {
     private MissionManager manager;
+    private DataSource ds;
     
     private final static ZonedDateTime NOW
             = LocalDateTime.of(2019, Month.JANUARY, 2, 12, 00).atZone(ZoneId.of("UTC"));
     
-    public MissionManagerTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
     @Before
-    public void setUp() {
-        manager = new MissionManagerImpl();
+    public void setUp() throws SQLException, IOException {
+        ds = prepareDataSource();
+        DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("createTables.sql"));
+        manager = new MissionManagerImpl(ds, prepareClockMock(NOW));
     }
     
     @After
-    public void tearDown() {
+    public void tearDown() throws SQLException, IOException {
+        DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("dropTables.sql"));
         manager = null;
+    }
+    
+    private static DataSource prepareDataSource() throws SQLException {
+        EmbeddedDataSource ds = new EmbeddedDataSource();
+        ds.setDatabaseName("memory:agencymgr-test");
+        ds.setCreateDatabase("create");
+        return ds;
     }
     
     private static Clock prepareClockMock(ZonedDateTime now) {
@@ -77,7 +80,7 @@ public class MissionManagerTest {
     /**
      * Tests of createMission method, of class MissionManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testCreateMissionNullMission() {
         manager.createMission(null);
     }
@@ -87,7 +90,7 @@ public class MissionManagerTest {
         Mission mission = createMissionMetro();
         mission.setCodeName(null);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -95,7 +98,7 @@ public class MissionManagerTest {
         Mission mission = createMissionMetro();
         mission.setStatus(null);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -103,7 +106,7 @@ public class MissionManagerTest {
         Mission mission = createMissionMetro();
         mission.setLocation(null);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -111,7 +114,7 @@ public class MissionManagerTest {
         Mission mission = createMissionMetro();
         mission.setDate(null);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -126,7 +129,7 @@ public class MissionManagerTest {
         Mission mission = createMissionMetro();
         mission.setId(Long.valueOf(0));
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -143,7 +146,7 @@ public class MissionManagerTest {
         Mission mission = createMissionOrder();
         mission.setStatus(MissionStatus.SCHEDULED);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -151,7 +154,7 @@ public class MissionManagerTest {
         Mission mission = createMissionMetro();
         mission.setStatus(MissionStatus.FAILED);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -160,7 +163,7 @@ public class MissionManagerTest {
         mission.setDate(LocalDate.of(2019, Month.JANUARY, 1));
         mission.setStatus(MissionStatus.SCHEDULED);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -169,13 +172,13 @@ public class MissionManagerTest {
         mission.setDate(LocalDate.of(2019, Month.JANUARY, 3));
         mission.setStatus(MissionStatus.FAILED);
         assertThatThrownBy(() -> manager.createMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     /**
      * Tests of updateMission method, of class MissionManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testUpdateMissionNullMission() {
         manager.updateMission(null);
     }
@@ -184,7 +187,7 @@ public class MissionManagerTest {
     public void testUpdateMissionNotCreated() {
         Mission mission = createMissionMetro();
         assertThatThrownBy(() -> manager.updateMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ServiceException.class);
     }
     
     private void testUpdateMissionOperation(Operation<Mission> updateOperation) {
@@ -281,7 +284,7 @@ public class MissionManagerTest {
     /**
      * Tests of deleteMission method, of class MissionManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testDeleteMissionNullMission() {
         manager.deleteMission(null);
     }
@@ -290,7 +293,7 @@ public class MissionManagerTest {
     public void testDeleteMissionNotCreated() {
         Mission mission = createMissionMetro();
         assertThatThrownBy(() -> manager.deleteMission(mission))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ServiceException.class);
     }
     
     @Test
@@ -323,7 +326,7 @@ public class MissionManagerTest {
         Mission mission = createMissionMetro();
         manager.createMission(mission);
         assertThatThrownBy(() -> manager.findMissionById(mission.getId()+1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ServiceException.class);
     }
     
     @Test
@@ -358,25 +361,4 @@ public class MissionManagerTest {
                 .usingFieldByFieldElementComparator()
                 .containsOnly(mission1,mission2);
     }
-
-    public class MissionManagerImpl implements MissionManager {
-
-        public void createMission(Mission mission) {
-        }
-
-        public void updateMission(Mission mission) {
-        }
-
-        public void deleteMission(Mission mission) {
-        }
-
-        public Mission findMissionById(Long id) {
-            return null;
-        }
-
-        public List<Mission> findAllMissions() {
-            return null;
-        }
-    }
-    
 }

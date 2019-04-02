@@ -4,13 +4,17 @@
  */
 package cz.muni.fi.pv168.agencymanager.manager;
 
+import cz.muni.fi.pv168.agencymanager.common.DBUtils;
+import cz.muni.fi.pv168.agencymanager.common.ServiceException;
+import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
-import java.util.List;
+import java.io.IOException;
+import java.sql.SQLException;
+import javax.sql.DataSource;
+import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.*;
 
@@ -20,26 +24,26 @@ import static org.assertj.core.api.Assertions.*;
  */
 public class AgentManagerTest {
     private AgentManager manager;
-    
-    public AgentManagerTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
+    private DataSource ds;
     
     @Before
-    public void setUp() {
-        manager = new AgentManagerImpl();
+    public void setUp() throws SQLException, IOException {
+        ds = prepareDataSource();
+        DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("createTables.sql"));
+        manager = new AgentManagerImpl(ds);
     }
     
     @After
-    public void tearDown() {
+    public void tearDown() throws SQLException, IOException {
+        DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("dropTables.sql"));
         manager = null;
+    }
+    
+    private static DataSource prepareDataSource() throws SQLException {
+        EmbeddedDataSource ds = new EmbeddedDataSource();
+        ds.setDatabaseName("memory:agencymgr-test");
+        ds.setCreateDatabase("create");
+        return ds;
     }
     
     private Agent createAgentBond() {
@@ -59,7 +63,7 @@ public class AgentManagerTest {
     /**
      * Tests of createAgent method, of class AgentManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testCreateAgentNullAgent() {
         manager.createAgent(null);
     }
@@ -69,7 +73,7 @@ public class AgentManagerTest {
         Agent agent = createAgentBond();
         agent.setCodeName(null);
         assertThatThrownBy(() -> manager.createAgent(agent))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -77,7 +81,7 @@ public class AgentManagerTest {
         Agent agent = createAgentBond();
         agent.setStatus(null);
         assertThatThrownBy(() -> manager.createAgent(agent))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -92,7 +96,7 @@ public class AgentManagerTest {
         Agent agent = createAgentBond();
         agent.setId(Long.valueOf(0));
         assertThatThrownBy(() -> manager.createAgent(agent))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -107,7 +111,7 @@ public class AgentManagerTest {
     /**
      * Tests of updateAgent method, of class AgentManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testUpdateAgentNullAgent() {
         manager.updateAgent(null);
     }
@@ -116,7 +120,7 @@ public class AgentManagerTest {
     public void testUpdateAgentNotCreated() {
         Agent agent = createAgentBond();
         assertThatThrownBy(() -> manager.updateAgent(agent))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ServiceException.class);
     }
     
     private void testUpdateAgentOperation(Operation<Agent> updateOperation) {
@@ -152,7 +156,7 @@ public class AgentManagerTest {
         manager.createAgent(agent);
         agent.setCodeName(null);
         assertThatThrownBy(() -> manager.updateAgent(agent))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
     
     @Test
@@ -161,13 +165,13 @@ public class AgentManagerTest {
         manager.createAgent(agent);
         agent.setStatus(null);
         assertThatThrownBy(() -> manager.updateAgent(agent))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     /**
      * Tests of deleteAgent method, of class AgentManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testDeleteAgentNullAgent() {
         manager.deleteAgent(null);
     }
@@ -176,7 +180,7 @@ public class AgentManagerTest {
     public void testDeleteAgentNotCreated() {
         Agent agent = createAgentBond();
         assertThatThrownBy(() -> manager.deleteAgent(agent))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ServiceException.class);
     }
     
     @Test
@@ -209,7 +213,7 @@ public class AgentManagerTest {
         Agent agent = createAgentBond();
         manager.createAgent(agent);
         assertThatThrownBy(() -> manager.findAgentById(agent.getId()+1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ServiceException.class);
     }
     
     @Test
@@ -244,25 +248,4 @@ public class AgentManagerTest {
                 .usingFieldByFieldElementComparator()
                 .containsOnly(agent1,agent2);
     }
-
-    public class AgentManagerImpl implements AgentManager {
-
-        public void createAgent(Agent agent) {
-        }
-
-        public void updateAgent(Agent agent) {
-        }
-
-        public void deleteAgent(Agent agent) {
-        }
-
-        public Agent findAgentById(Long id) {
-            return null;
-        }
-
-        public List<Agent> findAllAgents() {
-            return null;
-        }
-    }
-    
 }

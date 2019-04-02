@@ -18,6 +18,7 @@ public class Mission {
     private MissionStatus status;
     private LocalDate date;
     private String location;
+    private Long agentId;
 
     public Long getId() {
         return id;
@@ -59,9 +60,17 @@ public class Mission {
         this.location = location;
     }
 
+    public Long getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(Long agentId) {
+        this.agentId = agentId;
+    }
+
     @Override
     public String toString() {
-        return "Mission{" + "id=" + id + ", codeName=" + codeName + ", status=" + status + ", date=" + date + ", location=" + location + '}';
+        return "Mission{" + "id=" + id + ", codeName=" + codeName + ", status=" + status + ", date=" + date + ", location=" + location + ", agentId=" + agentId + '}';
     }
 
     @Override

@@ -3,7 +3,10 @@ package cz.muni.fi.pv168.agencymanager.manager;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
+import java.sql.SQLException;
 import java.util.List;
+import javax.sql.DataSource;
+import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -20,6 +23,9 @@ import static org.assertj.core.api.Assertions.*;
 public class AgencyManagerTest {
 
     private AgencyManager instance;
+    private AgentManager bodyManager;
+    private MissionManager graveManager;
+    private DataSource ds;
 
     public AgencyManagerTest() {
     }
@@ -42,6 +48,13 @@ public class AgencyManagerTest {
         instance = null;
     }
 
+    private static DataSource prepareDataSource() throws SQLException {
+        EmbeddedDataSource ds = new EmbeddedDataSource();
+        ds.setDatabaseName("memory:agencymgr-test");
+        ds.setCreateDatabase("create");
+        return ds;
+    }
+    
     private Agent createAgentBond() {
         Agent agent = new Agent();
         agent.setId(4574L);
