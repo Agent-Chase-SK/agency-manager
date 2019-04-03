@@ -1,10 +1,6 @@
-/**
- *
- * @author Jakub Suslik
- */
+
 package cz.muni.fi.pv168.agencymanager.common;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,7 +13,10 @@ import javax.sql.DataSource;
  * @author Jakub Suslik
  */
 public class DBUtils {
-    public static void executeSqlScript(DataSource ds, InputStream is) throws SQLException, IOException {
+    public static void executeSqlScript(DataSource ds, InputStream is) throws SQLException {
+        if(is == null){
+            System.err.println("null");
+        }
         try (Connection c = ds.getConnection()) {
             Scanner s = new Scanner(is).useDelimiter(";");
             while (s.hasNext()) {

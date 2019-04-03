@@ -1,7 +1,3 @@
-/**
- *
- * @author Jakub Suslik
- */
 package cz.muni.fi.pv168.agencymanager.manager;
 
 import cz.muni.fi.pv168.agencymanager.common.DBUtils;
@@ -36,19 +32,19 @@ public class MissionManagerTest {
             = LocalDateTime.of(2019, Month.JANUARY, 2, 12, 00).atZone(ZoneId.of("UTC"));
     
     @Before
-    public void setUp() throws SQLException, IOException {
+    public void setUp() throws SQLException {
         ds = prepareDataSource();
         DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("createTables.sql"));
         manager = new MissionManagerImpl(ds, prepareClockMock(NOW));
     }
     
     @After
-    public void tearDown() throws SQLException, IOException {
+    public void tearDown() throws SQLException {
         DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("dropTables.sql"));
         manager = null;
     }
     
-    private static DataSource prepareDataSource() throws SQLException {
+    private static DataSource prepareDataSource() {
         EmbeddedDataSource ds = new EmbeddedDataSource();
         ds.setDatabaseName("memory:agencymgr-test");
         ds.setCreateDatabase("create");
@@ -65,6 +61,7 @@ public class MissionManagerTest {
         mission.setDate(LocalDate.of(2033,Month.DECEMBER,10));
         mission.setLocation("Moscow");
         mission.setStatus(MissionStatus.SCHEDULED);
+        mission.setAgentId(456L);
         return mission;
     }
     
@@ -127,7 +124,7 @@ public class MissionManagerTest {
     @Test
     public void testCreateMissionWithId() {
         Mission mission = createMissionMetro();
-        mission.setId(Long.valueOf(0));
+        mission.setId(0L);
         assertThatThrownBy(() -> manager.createMission(mission))
                 .isInstanceOf(ValidationException.class);
     }
@@ -262,7 +259,16 @@ public class MissionManagerTest {
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
     }
-    
+
+    @Test
+    public void testUpdateMissionNullAgentId(){
+        Mission mission = createMissionMetro();
+        manager.createMission(mission);
+        mission.setAgentId(null);
+        assertThatThrownBy(() -> manager.updateMission(mission))
+                .isInstanceOf(ValidationException.class);
+    }
+
     @Test
     public void testUpdateMissionScheduledYesterday() {
         Mission mission = createMissionMetro();

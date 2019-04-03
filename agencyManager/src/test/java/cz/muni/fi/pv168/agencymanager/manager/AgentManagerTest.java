@@ -1,7 +1,3 @@
-/**
- *
- * @author Jakub Suslik
- */
 package cz.muni.fi.pv168.agencymanager.manager;
 
 import cz.muni.fi.pv168.agencymanager.common.DBUtils;
@@ -27,19 +23,19 @@ public class AgentManagerTest {
     private DataSource ds;
     
     @Before
-    public void setUp() throws SQLException, IOException {
+    public void setUp() throws SQLException {
         ds = prepareDataSource();
         DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("createTables.sql"));
         manager = new AgentManagerImpl(ds);
     }
     
     @After
-    public void tearDown() throws SQLException, IOException {
+    public void tearDown() throws SQLException {
         DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("dropTables.sql"));
         manager = null;
     }
     
-    private static DataSource prepareDataSource() throws SQLException {
+    private static DataSource prepareDataSource() {
         EmbeddedDataSource ds = new EmbeddedDataSource();
         ds.setDatabaseName("memory:agencymgr-test");
         ds.setCreateDatabase("create");
@@ -94,7 +90,7 @@ public class AgentManagerTest {
     @Test
     public void testCreateAgentWithId() {
         Agent agent = createAgentBond();
-        agent.setId(Long.valueOf(0));
+        agent.setId(0L);
         assertThatThrownBy(() -> manager.createAgent(agent))
                 .isInstanceOf(ValidationException.class);
     }

@@ -1,18 +1,17 @@
-/**
- *
- * @author Jakub Suslik
- */
+
 package cz.muni.fi.pv168.agencymanager.manager;
 
 import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
+import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 
@@ -65,13 +64,13 @@ public class AgentManagerImpl implements AgentManager {
             sta.setString(1, agent.getCodeName());
             sta.setString(2, toString(agent.getStatus()));
             
-            try(ResultSet keys = sta.executeQuery();) {
+            try(ResultSet keys = sta.executeQuery()) {
                 if(keys.next()) {
                     agent.setId(keys.getLong(1));
                 }
             }
         } catch(SQLException ex) {
-            throw new ServiceException("create agent failiure", ex);
+            throw new ServiceException("create agent failure", ex);
         }
     }
 
@@ -95,23 +94,68 @@ public class AgentManagerImpl implements AgentManager {
                 throw new ServiceException("updated " + result + " instead of 1 agent");
             }
         } catch (SQLException ex) {
-            throw new ServiceException("update agent failiure", ex);
+            throw new ServiceException("update agent failure", ex);
         }
     }
 
     @Override
     public void deleteAgent(Agent agent) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (agent == null) throw new IllegalArgumentException("agent is null");
+        if (agent.getId() == null) throw new ServiceException("agent id is null");
+        try(Connection connection = ds.getConnection();
+            PreparedStatement st = connection.prepareStatement("DELETE FROM Agent WHERE id = ?")){
+            st.setLong(1, agent.getId());
+            int result = st.executeUpdate();
+            if(result != 1) throw new ServiceException("deleted " + result + " instead of 1 agent");
+        } catch (SQLException e) {
+            throw new ServiceException("Error during deletion agent from db", e);
+        }
     }
 
     @Override
     public Agent findAgentById(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(id == null){
+            throw new IllegalArgumentException("Id is null");
+        }
+
+        try(Connection connection = ds.getConnection();
+            PreparedStatement st = connection.prepareStatement(
+                    "SELECT id, codeName, status FROM Agent")){
+            try (ResultSet rs = st.executeQuery()) {
+                if(rs.next()){
+                    return dataToAgent(rs);
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            throw new ServiceException("Error when getting all agents from DB0", e);
+        }
     }
 
     @Override
     public List<Agent> findAllAgents() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try(Connection connection = ds.getConnection();
+            PreparedStatement st = connection.prepareStatement(
+                    "SELECT id, codeName, status FROM Agent")){
+            try (ResultSet rs = st.executeQuery()) {
+                List<Agent> result = new ArrayList<>();
+                while (rs.next()) {
+                    result.add(dataToAgent(rs));
+                }
+                return result;
+            }
+        } catch (SQLException e) {
+            throw new ServiceException("Error when getting all agents from DB0", e);
+        }
     }
-    
+
+    private Agent dataToAgent(ResultSet resultSet) throws SQLException {
+        Agent agent = new Agent();
+        agent.setId(resultSet.getLong("id"));
+        agent.setCodeName(resultSet.getString("codeName"));
+        agent.setStatus(toAgentStatus(resultSet.getString("agentStatus")));
+        return agent;
+    }
+
 }

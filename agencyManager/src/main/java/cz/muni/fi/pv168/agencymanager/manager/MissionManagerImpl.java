@@ -29,13 +29,14 @@ public class MissionManagerImpl implements MissionManager {
 
         try(Connection conn = dataSource.getConnection();
             PreparedStatement st = conn.prepareStatement(
-                    "INSERT INTO Mission (codeName, status, date, location) VALUES (?,?,?,?)",
+                    "INSERT INTO Mission (codeName, status, date, location, agentId) VALUES (?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS)){
 
             st.setString(1, mission.getCodeName());
             st.setString(2,toString(mission.getStatus()));
             st.setDate(3, toSqlDate(mission.getDate()));
             st.setString(4, mission.getLocation());
+            st.setLong(5, mission.getAgentId());
 
             st.executeUpdate();
             try(ResultSet keys = st.getGeneratedKeys()) {
@@ -53,15 +54,18 @@ public class MissionManagerImpl implements MissionManager {
     @Override
     public void updateMission(Mission mission) {
         validate(mission);
+        if (mission.getAgentId() == null) throw new ValidationException("agentId is null");
         if (mission.getId() == null) throw new IllegalArgumentException("mission id is null");
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(
-                    "UPDATE Mission SET codeName = ?, status = ?, date = ?, location = ? WHERE id = ?")){
+                    "UPDATE Mission SET codeName = ?, status = ?, date = ?, location = ?, agentID = ?" +
+                            " WHERE id = ?")){
             st.setString(1, mission.getCodeName());
             st.setString(2, toString(mission.getStatus()));
             st.setDate(3, toSqlDate(mission.getDate()));
             st.setString(4, mission.getLocation());
-            st.setLong(5, mission.getId());
+            st.setLong(5, mission.getAgentId());
+            st.setLong(6, mission.getId());
             int result = st.executeUpdate();
             if(result != 1) throw new ServiceException("updated " + result + " instead of 1 mission");
         } catch (SQLException e) {
@@ -93,7 +97,7 @@ public class MissionManagerImpl implements MissionManager {
 
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(
-                    "SELECT id, codeName, status, date, location FROM Mission WHERE id = ?")){
+                    "SELECT id, codeName, status, date, location, agentId FROM Mission WHERE id = ?")){
             st.setLong(1,id);
             try(ResultSet result = st.executeQuery()){
                 if(result.next()){
@@ -111,7 +115,7 @@ public class MissionManagerImpl implements MissionManager {
     public List<Mission> findAllMissions() {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(
-                    "SELECT id, codeName, status, date, location FROM Mission")){
+                    "SELECT id, codeName, status, date, location, agentId FROM Mission")){
             try (ResultSet rs = st.executeQuery()) {
                 List<Mission> result = new ArrayList<>();
                 while (rs.next()) {
@@ -132,6 +136,7 @@ public class MissionManagerImpl implements MissionManager {
         mission.setLocation(resultSet.getString("location"));
         mission.setStatus(toMissionStatus(resultSet.getString("missionStatus")));
         mission.setDate(toLocalDate(resultSet.getDate("date")));
+        mission.setAgentId(resultSet.getLong("agentId"));
         return mission;
     }
 
