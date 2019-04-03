@@ -5,7 +5,6 @@ import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -61,7 +60,7 @@ public class MissionManagerTest {
         mission.setDate(LocalDate.of(2033,Month.DECEMBER,10));
         mission.setLocation("Moscow");
         mission.setStatus(MissionStatus.SCHEDULED);
-        mission.setAgentId(456L);
+        mission.setAgentId(null);
         return mission;
     }
     
@@ -71,6 +70,7 @@ public class MissionManagerTest {
         mission.setDate(LocalDate.of(1886,Month.AUGUST,16));
         mission.setLocation("London");
         mission.setStatus(MissionStatus.FAILED);
+        mission.setAgentId(null);
         return mission;
     }
 
@@ -171,6 +171,14 @@ public class MissionManagerTest {
         assertThatThrownBy(() -> manager.createMission(mission))
                 .isInstanceOf(ValidationException.class);
     }
+    
+    @Test
+    public void testCreateMissionNotNullAgentId() {
+        Mission mission = createMissionMetro();
+        mission.setAgentId(100L);
+        assertThatThrownBy(() -> manager.createMission(mission))
+                .isInstanceOf(ValidationException.class);
+    }
 
     /**
      * Tests of updateMission method, of class MissionManager.
@@ -183,6 +191,7 @@ public class MissionManagerTest {
     @Test
     public void testUpdateMissionNotCreated() {
         Mission mission = createMissionMetro();
+        mission.setAgentId(10L);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ServiceException.class);
     }
@@ -193,6 +202,9 @@ public class MissionManagerTest {
         
         manager.createMission(mission1);
         manager.createMission(mission2);
+        
+        mission1.setAgentId(10L);
+        mission2.setAgentId(20L);
         
         updateOperation.callOn(mission2);
         
@@ -228,6 +240,7 @@ public class MissionManagerTest {
     public void testUpdateMissionNullName() {
         Mission mission = createMissionMetro();
         manager.createMission(mission);
+        mission.setAgentId(10L);
         mission.setCodeName(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
@@ -237,6 +250,7 @@ public class MissionManagerTest {
     public void testUpdateMissionNullStatus() {
         Mission mission = createMissionMetro();
         manager.createMission(mission);
+        mission.setAgentId(10L);
         mission.setStatus(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
@@ -246,6 +260,7 @@ public class MissionManagerTest {
     public void testUpdateMissionNullLocation() {
         Mission mission = createMissionMetro();
         manager.createMission(mission);
+        mission.setAgentId(10L);
         mission.setLocation(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
@@ -255,6 +270,7 @@ public class MissionManagerTest {
     public void testUpdateMissionNullDate() {
         Mission mission = createMissionMetro();
         manager.createMission(mission);
+        mission.setAgentId(10L);
         mission.setDate(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
@@ -264,7 +280,6 @@ public class MissionManagerTest {
     public void testUpdateMissionNullAgentId(){
         Mission mission = createMissionMetro();
         manager.createMission(mission);
-        mission.setAgentId(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
     }
@@ -273,6 +288,7 @@ public class MissionManagerTest {
     public void testUpdateMissionScheduledYesterday() {
         Mission mission = createMissionMetro();
         manager.createMission(mission);
+        mission.setAgentId(10L);
         mission.setDate(LocalDate.of(2019, Month.JANUARY, 1));
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
@@ -282,6 +298,7 @@ public class MissionManagerTest {
     public void testUpdateMissionNotScheduledTomorrow() {
         Mission mission = createMissionOrder();
         manager.createMission(mission);
+        mission.setAgentId(10L);
         mission.setDate(LocalDate.of(2019, Month.JANUARY, 3));
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
