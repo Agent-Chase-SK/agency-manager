@@ -348,8 +348,7 @@ public class MissionManagerTest {
     public void testFindMissionByIdWrongId() {
         Mission mission = createMissionMetro();
         manager.createMission(mission);
-        assertThatThrownBy(() -> manager.findMissionById(mission.getId()+1))
-                .isInstanceOf(ServiceException.class);
+        assertThat(manager.findMissionById(mission.getId()+1)).isNull();
     }
     
     @Test

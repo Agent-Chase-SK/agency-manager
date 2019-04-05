@@ -5,7 +5,6 @@ import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
-import java.io.IOException;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.derby.jdbc.EmbeddedDataSource;
@@ -115,6 +114,7 @@ public class AgentManagerTest {
     @Test
     public void testUpdateAgentNotCreated() {
         Agent agent = createAgentBond();
+        agent.setId(1L);
         assertThatThrownBy(() -> manager.updateAgent(agent))
                 .isInstanceOf(ServiceException.class);
     }
@@ -175,6 +175,7 @@ public class AgentManagerTest {
     @Test
     public void testDeleteAgentNotCreated() {
         Agent agent = createAgentBond();
+        agent.setId(1L);
         assertThatThrownBy(() -> manager.deleteAgent(agent))
                 .isInstanceOf(ServiceException.class);
     }
@@ -199,7 +200,7 @@ public class AgentManagerTest {
     /**
      * Tests of findAgentById method, of class AgentManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testFindAgentByIdNullId() {
         manager.findAgentById(null);
     }
@@ -208,8 +209,7 @@ public class AgentManagerTest {
     public void testFindAgentByIdWrongId() {
         Agent agent = createAgentBond();
         manager.createAgent(agent);
-        assertThatThrownBy(() -> manager.findAgentById(agent.getId()+1))
-                .isInstanceOf(ServiceException.class);
+        assertThat(manager.findAgentById(agent.getId()+1L)).isNull();
     }
     
     @Test

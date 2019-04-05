@@ -4,7 +4,6 @@ package cz.muni.fi.pv168.agencymanager.manager;
 import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
-import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,9 +63,11 @@ public class AgentManagerImpl implements AgentManager {
             sta.setString(1, agent.getCodeName());
             sta.setString(2, toString(agent.getStatus()));
             
-            try(ResultSet keys = sta.executeQuery()) {
+            sta.executeUpdate();
+            try(ResultSet keys = sta.getGeneratedKeys()) {
                 if(keys.next()) {
-                    agent.setId(keys.getLong(1));
+                    Long id = keys.getLong(1);
+                    agent.setId(id);
                 }
             }
         } catch(SQLException ex) {
@@ -100,13 +101,14 @@ public class AgentManagerImpl implements AgentManager {
 
     @Override
     public void deleteAgent(Agent agent) {
-        if (agent == null) throw new IllegalArgumentException("agent is null");
+        if (agent == null) throw new ValidationException("agent is null");
         if (agent.getId() == null) throw new ServiceException("agent id is null");
         try(Connection connection = ds.getConnection();
             PreparedStatement st = connection.prepareStatement("DELETE FROM Agent WHERE id = ?")){
             st.setLong(1, agent.getId());
             int result = st.executeUpdate();
             if(result != 1) throw new ServiceException("deleted " + result + " instead of 1 agent");
+            agent.setId(null);
         } catch (SQLException e) {
             throw new ServiceException("Error during deletion agent from db", e);
         }
@@ -115,12 +117,13 @@ public class AgentManagerImpl implements AgentManager {
     @Override
     public Agent findAgentById(Long id) {
         if(id == null){
-            throw new IllegalArgumentException("Id is null");
+            throw new ValidationException("Id is null");
         }
 
         try(Connection connection = ds.getConnection();
             PreparedStatement st = connection.prepareStatement(
-                    "SELECT id, codeName, status FROM Agent")){
+                    "SELECT id, codeName, status FROM Agent WHERE id=?")){
+            st.setLong(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if(rs.next()){
                     return dataToAgent(rs);
@@ -154,7 +157,7 @@ public class AgentManagerImpl implements AgentManager {
         Agent agent = new Agent();
         agent.setId(resultSet.getLong("id"));
         agent.setCodeName(resultSet.getString("codeName"));
-        agent.setStatus(toAgentStatus(resultSet.getString("agentStatus")));
+        agent.setStatus(toAgentStatus(resultSet.getString("status")));
         return agent;
     }
 
