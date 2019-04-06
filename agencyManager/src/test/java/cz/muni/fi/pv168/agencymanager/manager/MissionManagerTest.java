@@ -191,6 +191,7 @@ public class MissionManagerTest {
     @Test
     public void testUpdateMissionNotCreated() {
         Mission mission = createMissionMetro();
+        mission.setId(20L);
         mission.setAgentId(10L);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ServiceException.class);
@@ -203,7 +204,6 @@ public class MissionManagerTest {
         manager.createMission(mission1);
         manager.createMission(mission2);
         
-        mission1.setAgentId(10L);
         mission2.setAgentId(20L);
         
         updateOperation.callOn(mission2);
@@ -234,6 +234,11 @@ public class MissionManagerTest {
     @Test
     public void testUpdateMissionDate() {
         testUpdateMissionOperation((mission) -> mission.setDate(LocalDate.of(1000, Month.MARCH, 11)));
+    }
+    
+    @Test
+    public void testUpdateMissionAgentId() {
+        testUpdateMissionOperation((mission) -> mission.setAgentId(32L));
     }
     
     @Test
@@ -339,7 +344,7 @@ public class MissionManagerTest {
     /**
      * Tests of findMissionById method, of class MissionManager.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void testFindMissionByIdNullId() {
         manager.findMissionById(null);
     }

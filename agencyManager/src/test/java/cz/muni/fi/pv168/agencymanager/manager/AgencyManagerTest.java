@@ -23,8 +23,8 @@ import static org.assertj.core.api.Assertions.*;
 public class AgencyManagerTest {
 
     private AgencyManager instance;
-    private AgentManager bodyManager;
-    private MissionManager graveManager;
+    private AgentManager agentManager;
+    private MissionManager missionManager;
     private DataSource ds;
 
     public AgencyManagerTest() {

@@ -4,9 +4,14 @@ import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
 import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.sql.DataSource;
-import java.sql.*;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,7 +19,7 @@ import java.util.List;
 
 public class MissionManagerImpl implements MissionManager {
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
     private final Clock clock;
 
     public MissionManagerImpl(DataSource dataSource, Clock clock) {
@@ -25,18 +30,18 @@ public class MissionManagerImpl implements MissionManager {
     @Override
     public void createMission(Mission mission) {
         validate(mission);
-        if (mission.getId() != null) throw new IllegalArgumentException("mission id is already set");
+        if (mission.getId() != null) throw new ValidationException("mission id is already set");
+        if (mission.getAgentId() != null) throw new ValidationException("agent is set");
 
         try(Connection conn = dataSource.getConnection();
             PreparedStatement st = conn.prepareStatement(
-                    "INSERT INTO Mission (codeName, status, date, location, agentId) VALUES (?,?,?,?,?)",
+                    "INSERT INTO Mission (codeName, status, date, location) VALUES (?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS)){
 
             st.setString(1, mission.getCodeName());
             st.setString(2,toString(mission.getStatus()));
             st.setDate(3, toSqlDate(mission.getDate()));
             st.setString(4, mission.getLocation());
-            st.setLong(5, mission.getAgentId());
 
             st.executeUpdate();
             try(ResultSet keys = st.getGeneratedKeys()) {
@@ -55,7 +60,7 @@ public class MissionManagerImpl implements MissionManager {
     public void updateMission(Mission mission) {
         validate(mission);
         if (mission.getAgentId() == null) throw new ValidationException("agentId is null");
-        if (mission.getId() == null) throw new IllegalArgumentException("mission id is null");
+        if (mission.getId() == null) throw new ValidationException("mission id is null");
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(
                     "UPDATE Mission SET codeName = ?, status = ?, date = ?, location = ?, agentID = ?" +
@@ -76,13 +81,14 @@ public class MissionManagerImpl implements MissionManager {
 
     @Override
     public void deleteMission(Mission mission) {
-        if (mission == null) throw new IllegalArgumentException("mission is null");
+        if (mission == null) throw new ValidationException("mission is null");
         if (mission.getId() == null) throw new ServiceException("grave id is null");
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement("DELETE FROM Mission WHERE id = ?")){
             st.setLong(1, mission.getId());
             int result = st.executeUpdate();
             if (result != 1) throw new ServiceException("deleted " + result + " instead of 1 mission");
+            mission.setId(null);
         } catch (SQLException e) {
             throw new ServiceException("Error during deletion mission from db", e);
         }
@@ -92,7 +98,7 @@ public class MissionManagerImpl implements MissionManager {
     @Override
     public Mission findMissionById(Long id) {
         if(id == null){
-            throw new IllegalArgumentException("Id is null");
+            throw new ValidationException("Id is null");
         }
 
         try(Connection connection = dataSource.getConnection();
@@ -134,15 +140,20 @@ public class MissionManagerImpl implements MissionManager {
         mission.setId(resultSet.getLong("id"));
         mission.setCodeName(resultSet.getString("codeName"));
         mission.setLocation(resultSet.getString("location"));
-        mission.setStatus(toMissionStatus(resultSet.getString("missionStatus")));
+        mission.setStatus(toMissionStatus(resultSet.getString("status")));
         mission.setDate(toLocalDate(resultSet.getDate("date")));
-        mission.setAgentId(resultSet.getLong("agentId"));
+        Long agentId = resultSet.getLong("agentId");
+        if (agentId == 0L) {
+            mission.setAgentId(null);
+        } else {
+            mission.setAgentId(agentId);
+        }
         return mission;
     }
 
     private void validate(Mission mission){
         if(mission == null){
-            throw new IllegalArgumentException("mission is null");
+            throw new ValidationException("mission is null");
         }
         if(mission.getCodeName() == null){
             throw new ValidationException("Code name is null");
@@ -157,10 +168,12 @@ public class MissionManagerImpl implements MissionManager {
             throw new ValidationException("Date is null");
         }
         LocalDate today = LocalDate.now(clock);
-        if(mission.getDate() != null && mission.getDate().isBefore(today)){
-            throw new ValidationException("mission date is in the past");
+        if (mission.getStatus() == MissionStatus.SCHEDULED && mission.getDate().isBefore(today)) {
+            throw new ValidationException("mission is scheduled in past");
         }
-
+        if (mission.getStatus() != MissionStatus.SCHEDULED && mission.getDate().isAfter(today)) {
+            throw new ValidationException("mission is not scheduled in future");
+        }
     }
 
     private static String toString(MissionStatus missionStatus) {
