@@ -135,7 +135,7 @@ public class MissionManagerImpl implements MissionManager {
 
     }
 
-    private Mission dataToMission(ResultSet resultSet) throws SQLException {
+    public static Mission dataToMission(ResultSet resultSet) throws SQLException {
         Mission mission = new Mission();
         mission.setId(resultSet.getLong("id"));
         mission.setCodeName(resultSet.getString("codeName"));
@@ -176,11 +176,11 @@ public class MissionManagerImpl implements MissionManager {
         }
     }
 
-    private static String toString(MissionStatus missionStatus) {
+    public static String toString(MissionStatus missionStatus) {
         return missionStatus == null ? null : missionStatus.name();
     }
 
-    private static Date toSqlDate(LocalDate localDate) {
+    public static Date toSqlDate(LocalDate localDate) {
         return localDate == null ? null : Date.valueOf(localDate);
     }
 

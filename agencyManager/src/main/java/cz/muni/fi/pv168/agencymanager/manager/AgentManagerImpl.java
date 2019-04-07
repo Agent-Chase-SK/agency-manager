@@ -153,7 +153,7 @@ public class AgentManagerImpl implements AgentManager {
         }
     }
 
-    private Agent dataToAgent(ResultSet resultSet) throws SQLException {
+    public static Agent dataToAgent(ResultSet resultSet) throws SQLException {
         Agent agent = new Agent();
         agent.setId(resultSet.getLong("id"));
         agent.setCodeName(resultSet.getString("codeName"));
