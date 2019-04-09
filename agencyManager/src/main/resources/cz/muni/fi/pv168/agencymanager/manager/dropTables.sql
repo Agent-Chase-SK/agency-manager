@@ -1,2 +1,2 @@
-drop table Agent;
 drop table Mission;
+drop table Agent;

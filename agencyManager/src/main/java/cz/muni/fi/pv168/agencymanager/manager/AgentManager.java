@@ -14,7 +14,6 @@ import java.util.List;
 public interface AgentManager {
     public void createAgent(Agent agent);
     public void updateAgent(Agent agent);
-    public void deleteAgent(Agent agent);
     public Agent findAgentById(Long id);
     public List<Agent> findAllAgents();
 }

@@ -10,5 +10,9 @@ create table Mission (
     status varchar(31),
     date date,
     location varchar(255),
-    agentId bigint
+	agentId bigint,
+	
+    CONSTRAINT AGENT_FK
+	FOREIGN KEY (agentId)
+	REFERENCES Agent (id)
 );

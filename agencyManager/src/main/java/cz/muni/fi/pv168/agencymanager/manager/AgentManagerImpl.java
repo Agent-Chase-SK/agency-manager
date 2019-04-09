@@ -100,21 +100,6 @@ public class AgentManagerImpl implements AgentManager {
     }
 
     @Override
-    public void deleteAgent(Agent agent) {
-        if (agent == null) throw new ValidationException("agent is null");
-        if (agent.getId() == null) throw new ServiceException("agent id is null");
-        try(Connection connection = ds.getConnection();
-            PreparedStatement st = connection.prepareStatement("DELETE FROM Agent WHERE id = ?")){
-            st.setLong(1, agent.getId());
-            int result = st.executeUpdate();
-            if(result != 1) throw new ServiceException("deleted " + result + " instead of 1 agent");
-            agent.setId(null);
-        } catch (SQLException e) {
-            throw new ServiceException("Error during deletion agent from db", e);
-        }
-    }
-
-    @Override
     public Agent findAgentById(Long id) {
         if(id == null){
             throw new ValidationException("Id is null");

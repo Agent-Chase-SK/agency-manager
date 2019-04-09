@@ -163,40 +163,7 @@ public class AgentManagerTest {
         assertThatThrownBy(() -> manager.updateAgent(agent))
                 .isInstanceOf(ValidationException.class);
     }
-
-    /**
-     * Tests of deleteAgent method, of class AgentManager.
-     */
-    @Test(expected = ValidationException.class)
-    public void testDeleteAgentNullAgent() {
-        manager.deleteAgent(null);
-    }
     
-    @Test
-    public void testDeleteAgentNotCreated() {
-        Agent agent = createAgentBond();
-        agent.setId(1L);
-        assertThatThrownBy(() -> manager.deleteAgent(agent))
-                .isInstanceOf(ServiceException.class);
-    }
-    
-    @Test
-    public void testDeleteAgentOnlyOne() {
-        Agent agent1 = createAgentBond();
-        Agent agent2 = createAgentNoname();
-        
-        manager.createAgent(agent1);
-        manager.createAgent(agent2);
-        
-        assertThat(agent1.getId()).isNotNull();
-        assertThat(agent2.getId()).isNotNull();
-        
-        manager.deleteAgent(agent2);
-        
-        assertThat(agent1.getId()).isNotNull();
-        assertThat(agent2.getId()).isNull();
-    }
-
     /**
      * Tests of findAgentById method, of class AgentManager.
      */

@@ -78,6 +78,9 @@ public class AgencyManagerTest {
         mission.setStatus(MissionStatus.ACTIVE);
         mission.setDate(LocalDate.of(1886,Month.AUGUST,16));
         mission.setLocation("there");
+        Agent agent = createAgentBond();
+        agentManager.createAgent(agent);
+        mission.setAgentId(agent.getId());
         return mission;
     }
 
@@ -121,14 +124,6 @@ public class AgencyManagerTest {
         missionManager.createMission(mission);
         manager.assignAgentToMission(agent, mission);
         assertThat(manager.findMissionsWithAgent(agent)).containsOnly(mission);
-    }
-
-    @Test
-    public void findAgentOnMissionTest(){
-        Mission mission = this.createMissionSample();
-        missionManager.createMission(mission);
-        Agent agent = manager.findAgentOnMission(mission);
-        assertThat(agent).isNull();
     }
 
     @Test

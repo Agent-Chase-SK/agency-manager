@@ -14,7 +14,6 @@ import java.util.List;
 public interface MissionManager {
     public void createMission(Mission mission);
     public void updateMission(Mission mission);
-    public void deleteMission(Mission mission);
     public Mission findMissionById(Long id);
     public List<Mission> findAllMissions();
 }

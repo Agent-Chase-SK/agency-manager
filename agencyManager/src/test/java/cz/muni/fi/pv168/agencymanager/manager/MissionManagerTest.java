@@ -3,7 +3,9 @@ package cz.muni.fi.pv168.agencymanager.manager;
 import cz.muni.fi.pv168.agencymanager.common.DBUtils;
 import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
+import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
+import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
 import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
 import java.sql.SQLException;
 import java.time.Clock;
@@ -25,6 +27,7 @@ import static org.assertj.core.api.Assertions.*;
  */
 public class MissionManagerTest {
     private MissionManager manager;
+    private AgentManager agentManager;
     private DataSource ds;
     
     private final static ZonedDateTime NOW
@@ -35,12 +38,14 @@ public class MissionManagerTest {
         ds = prepareDataSource();
         DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("createTables.sql"));
         manager = new MissionManagerImpl(ds, prepareClockMock(NOW));
+        agentManager = new AgentManagerImpl(ds);
     }
     
     @After
     public void tearDown() throws SQLException {
         DBUtils.executeSqlScript(ds,AgentManager.class.getResourceAsStream("dropTables.sql"));
         manager = null;
+        agentManager = null;
     }
     
     private static DataSource prepareDataSource() {
@@ -54,13 +59,22 @@ public class MissionManagerTest {
         return Clock.fixed(now.toInstant(), now.getZone());
     }
     
+    private Agent createAgentBond() {
+        Agent agent = new Agent();
+        agent.setCodeName("007");
+        agent.setStatus(AgentStatus.ACTIVE);
+        return agent;
+    }
+    
     private Mission createMissionMetro() {
         Mission mission = new Mission();
         mission.setCodeName("2033");
         mission.setDate(LocalDate.of(2033,Month.DECEMBER,10));
         mission.setLocation("Moscow");
         mission.setStatus(MissionStatus.SCHEDULED);
-        mission.setAgentId(null);
+        Agent agent = createAgentBond();
+        agentManager.createAgent(agent);
+        mission.setAgentId(agent.getId());
         return mission;
     }
     
@@ -70,7 +84,9 @@ public class MissionManagerTest {
         mission.setDate(LocalDate.of(1886,Month.AUGUST,16));
         mission.setLocation("London");
         mission.setStatus(MissionStatus.FAILED);
-        mission.setAgentId(null);
+        Agent agent = createAgentBond();
+        agentManager.createAgent(agent);
+        mission.setAgentId(agent.getId());
         return mission;
     }
 
@@ -173,9 +189,9 @@ public class MissionManagerTest {
     }
     
     @Test
-    public void testCreateMissionNotNullAgentId() {
+    public void testCreateMissionNullAgentId() {
         Mission mission = createMissionMetro();
-        mission.setAgentId(100L);
+        mission.setAgentId(null);
         assertThatThrownBy(() -> manager.createMission(mission))
                 .isInstanceOf(ValidationException.class);
     }
@@ -192,7 +208,6 @@ public class MissionManagerTest {
     public void testUpdateMissionNotCreated() {
         Mission mission = createMissionMetro();
         mission.setId(20L);
-        mission.setAgentId(10L);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ServiceException.class);
     }
@@ -203,8 +218,6 @@ public class MissionManagerTest {
         
         manager.createMission(mission1);
         manager.createMission(mission2);
-        
-        mission2.setAgentId(20L);
         
         updateOperation.callOn(mission2);
         
@@ -238,7 +251,9 @@ public class MissionManagerTest {
     
     @Test
     public void testUpdateMissionAgentId() {
-        testUpdateMissionOperation((mission) -> mission.setAgentId(32L));
+        Agent agent = createAgentBond();
+        agentManager.createAgent(agent);
+        testUpdateMissionOperation((mission) -> mission.setAgentId(agent.getId()));
     }
     
     @Test
@@ -285,6 +300,7 @@ public class MissionManagerTest {
     public void testUpdateMissionNullAgentId(){
         Mission mission = createMissionMetro();
         manager.createMission(mission);
+        mission.setAgentId(null);
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
     }
@@ -307,38 +323,6 @@ public class MissionManagerTest {
         mission.setDate(LocalDate.of(2019, Month.JANUARY, 3));
         assertThatThrownBy(() -> manager.updateMission(mission))
                 .isInstanceOf(ValidationException.class);
-    }
-
-    /**
-     * Tests of deleteMission method, of class MissionManager.
-     */
-    @Test(expected = ValidationException.class)
-    public void testDeleteMissionNullMission() {
-        manager.deleteMission(null);
-    }
-    
-    @Test
-    public void testDeleteMissionNotCreated() {
-        Mission mission = createMissionMetro();
-        assertThatThrownBy(() -> manager.deleteMission(mission))
-                .isInstanceOf(ServiceException.class);
-    }
-    
-    @Test
-    public void testDeleteMissionOnlyOne() {
-        Mission mission1 = createMissionMetro();
-        Mission mission2 = createMissionOrder();
-        
-        manager.createMission(mission1);
-        manager.createMission(mission2);
-        
-        assertThat(mission1.getId()).isNotNull();
-        assertThat(mission2.getId()).isNotNull();
-        
-        manager.deleteMission(mission2);
-        
-        assertThat(mission1.getId()).isNotNull();
-        assertThat(mission2.getId()).isNull();
     }
 
     /**

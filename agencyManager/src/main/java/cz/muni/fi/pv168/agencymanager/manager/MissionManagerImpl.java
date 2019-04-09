@@ -31,17 +31,18 @@ public class MissionManagerImpl implements MissionManager {
     public void createMission(Mission mission) {
         validate(mission);
         if (mission.getId() != null) throw new ValidationException("mission id is already set");
-        if (mission.getAgentId() != null) throw new ValidationException("agent is set");
+        if (mission.getAgentId() == null) throw new ValidationException("agent is not set");
 
         try(Connection conn = dataSource.getConnection();
             PreparedStatement st = conn.prepareStatement(
-                    "INSERT INTO Mission (codeName, status, date, location) VALUES (?,?,?,?)",
+                    "INSERT INTO Mission (codeName, status, date, location, agentId) VALUES (?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS)){
 
             st.setString(1, mission.getCodeName());
             st.setString(2,toString(mission.getStatus()));
             st.setDate(3, toSqlDate(mission.getDate()));
             st.setString(4, mission.getLocation());
+            st.setLong(5, mission.getAgentId());
 
             st.executeUpdate();
             try(ResultSet keys = st.getGeneratedKeys()) {
@@ -75,22 +76,6 @@ public class MissionManagerImpl implements MissionManager {
             if(result != 1) throw new ServiceException("updated " + result + " instead of 1 mission");
         } catch (SQLException e) {
             throw new ServiceException("Error when updating mission in the DB",e);
-        }
-
-    }
-
-    @Override
-    public void deleteMission(Mission mission) {
-        if (mission == null) throw new ValidationException("mission is null");
-        if (mission.getId() == null) throw new ServiceException("grave id is null");
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement st = connection.prepareStatement("DELETE FROM Mission WHERE id = ?")){
-            st.setLong(1, mission.getId());
-            int result = st.executeUpdate();
-            if (result != 1) throw new ServiceException("deleted " + result + " instead of 1 mission");
-            mission.setId(null);
-        } catch (SQLException e) {
-            throw new ServiceException("Error during deletion mission from db", e);
         }
 
     }
