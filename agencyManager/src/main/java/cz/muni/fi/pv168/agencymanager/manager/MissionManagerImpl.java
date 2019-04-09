@@ -31,7 +31,6 @@ public class MissionManagerImpl implements MissionManager {
     public void createMission(Mission mission) {
         validate(mission);
         if (mission.getId() != null) throw new ValidationException("mission id is already set");
-        if (mission.getAgentId() == null) throw new ValidationException("agent is not set");
 
         try(Connection conn = dataSource.getConnection();
             PreparedStatement st = conn.prepareStatement(
@@ -60,7 +59,6 @@ public class MissionManagerImpl implements MissionManager {
     @Override
     public void updateMission(Mission mission) {
         validate(mission);
-        if (mission.getAgentId() == null) throw new ValidationException("agentId is null");
         if (mission.getId() == null) throw new ValidationException("mission id is null");
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(
@@ -158,6 +156,9 @@ public class MissionManagerImpl implements MissionManager {
         }
         if (mission.getStatus() != MissionStatus.SCHEDULED && mission.getDate().isAfter(today)) {
             throw new ValidationException("mission is not scheduled in future");
+        }
+        if (mission.getAgentId() == null) {
+            throw new ValidationException("agent is not set");
         }
     }
 
