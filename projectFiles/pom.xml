@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cz.muni.fi.pv168</groupId>
@@ -12,11 +10,11 @@
 
     <!-- define child projects -->
     <modules>
-     <module>agencymanager</module>
-     <module>agencymanager-web</module>
-	</modules>	
+        <module>agencymanager</module>
+        <module>agencyManagerWeb</module>
+    </modules>	
 	
-	<properties>
+    <properties>
         <!-- Use UTF-8 in the whole project -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -34,6 +32,6 @@
         <spring.version>5.1.5.RELEASE</spring.version>
         <tomcat.version>9.0.17</tomcat.version>
         <taglibs-standard.version>1.2.5</taglibs-standard.version>
-	</properties>
+    </properties>
 	
 </project>
