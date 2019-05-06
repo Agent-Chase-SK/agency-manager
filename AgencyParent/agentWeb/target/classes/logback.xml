@@ -1,0 +1,16 @@
+<configuration>
+    <appender name="APP" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <root level="info">
+        <appender-ref ref="APP"/>
+    </root>
+ 
+    <logger name="cz" level="warn"/>
+    <logger name="cz.muni.fi.pv168" level="info"/>
+    <logger name="cz.muni.fi.pv168.agentweb" level="debug"/>
+ 
+</configuration>
