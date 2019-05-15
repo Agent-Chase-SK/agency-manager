@@ -5,33 +5,74 @@
  */
 package cz.muni.fi.pv168.agencymanagergui;
 
-import javax.swing.table.DefaultTableModel;
+import cz.muni.fi.pv168.agencymanager.common.Main;
+import cz.muni.fi.pv168.agencymanager.entity.Agent;
+import cz.muni.fi.pv168.agencymanager.manager.AgentManager;
+import cz.muni.fi.pv168.agencymanager.manager.AgentManagerImpl;
+import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
+import java.io.IOException;
+import java.util.ResourceBundle;
+import java.util.function.Function;
+import javax.swing.table.AbstractTableModel;
 
 /**
  *
  * @author Jakub
  */
-public class AgentTableModel extends DefaultTableModel {
-    private static final int NUM_OF_COLUMNS = 2;
+public class AgentTableModel extends AbstractTableModel {
+    private final AgentManager manager;
+    private final ResourceBundle bundle = java.util.ResourceBundle.getBundle("AgencyManager");
 
-    @Override
-    public Object getValueAt(int row, int column) {
-        return super.getValueAt(row, column); //To change body of generated methods, choose Tools | Templates.
+    public AgentTableModel() {
+        try {
+            this.manager = new AgentManagerImpl(Main.getDataSource());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
+    
+    private enum Column {
+        
+        CODENAME("codeName" , String.class, Agent::getCodeName),
+        STATUS("status" , AgentStatus.class, Agent::getStatus);
+        
+        private final String label;
+        private final Class<?> type;
+        private final Function<Agent,?> extractor;
+        
 
-    @Override
-    public String getColumnName(int column) {
-        return super.getColumnName(column); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int getColumnCount() {
-        return NUM_OF_COLUMNS;
+        private <T> Column(String label, Class<T> type, Function<Agent, T> extractor) {
+            this.label = label;
+            this.type = type;
+            this.extractor = extractor;
+            
+        }
     }
 
     @Override
     public int getRowCount() {
-        return super.getRowCount(); //To change body of generated methods, choose Tools | Templates.
+        return manager.findAllAgents().size();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return Column.values().length;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Agent currentAgent = manager.findAgentById(new Long(rowIndex));
+        return Column.values()[columnIndex].extractor.apply(currentAgent);
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return Column.values()[columnIndex].type;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return bundle.getString(Column.values()[column].label);
     }
     
 }

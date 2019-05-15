@@ -5,33 +5,95 @@
  */
 package cz.muni.fi.pv168.agencymanagergui;
 
-import javax.swing.table.DefaultTableModel;
+import cz.muni.fi.pv168.agencymanager.common.Main;
+import cz.muni.fi.pv168.agencymanager.entity.Mission;
+import cz.muni.fi.pv168.agencymanager.manager.AgentManager;
+import cz.muni.fi.pv168.agencymanager.manager.AgentManagerImpl;
+import cz.muni.fi.pv168.agencymanager.manager.MissionManager;
+import cz.muni.fi.pv168.agencymanager.manager.MissionManagerImpl;
+import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
+import java.io.IOException;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.ResourceBundle;
+import javax.swing.table.AbstractTableModel;
 
 /**
  *
  * @author Jakub
  */
-public class MissionTableModel extends DefaultTableModel {
-    private static final int NUM_OF_COLUMNS = 4;
+public class MissionTableModel extends AbstractTableModel {
+    private final MissionManager missionManager;
+    private final AgentManager agentManager;
+    private final ResourceBundle bundle = java.util.ResourceBundle.getBundle("AgencyManager");
 
-    @Override
-    public Object getValueAt(int row, int column) {
-        return super.getValueAt(row, column); //To change body of generated methods, choose Tools | Templates.
+    public MissionTableModel() {
+        try {
+            this.missionManager = new MissionManagerImpl(Main.getDataSource(), Clock.systemDefaultZone());
+            this.agentManager = new AgentManagerImpl(Main.getDataSource());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
-
-    @Override
-    public String getColumnName(int column) {
-        return super.getColumnName(column); //To change body of generated methods, choose Tools | Templates.
+    
+    private String getAgentFromMission(Mission mission) {
+        return agentManager.findAgentById(mission.getAgentId()).getCodeName();
     }
+    
+    private enum Column {
+        
+        CODENAME("codeName", String.class),
+        STATUS("status", MissionStatus.class),
+        DATE("date", LocalDate.class),
+        LOCATION("location", String.class),
+        AGENT("agent", String.class);
+        
+        private final String label;
+        private final Class<?> type;
 
-    @Override
-    public int getColumnCount() {
-        return NUM_OF_COLUMNS;
+        private <T> Column(String label, Class<T> type) {
+            this.label = label;
+            this.type = type;
+        }
     }
 
     @Override
     public int getRowCount() {
-        return super.getRowCount(); //To change body of generated methods, choose Tools | Templates.
+        return missionManager.findAllMissions().size();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return Column.values().length;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Mission currentMission = missionManager.findMissionById(new Long(rowIndex));
+        switch (columnIndex) {
+            case 0:
+                return currentMission.getCodeName();
+            case 1:
+                return currentMission.getStatus();
+            case 2:
+                return currentMission.getDate();
+            case 3:
+                return currentMission.getLocation();
+            case 4:
+                return getAgentFromMission(currentMission);
+            default:
+                throw new IndexOutOfBoundsException("Invalid columnIndex: " + columnIndex);
+        }
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return Column.values()[columnIndex].type;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return bundle.getString(Column.values()[column].label);
     }
     
 }

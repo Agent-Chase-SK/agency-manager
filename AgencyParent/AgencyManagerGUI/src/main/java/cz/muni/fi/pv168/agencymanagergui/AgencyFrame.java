@@ -53,8 +53,9 @@ public class AgencyFrame extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("AgencyManager"); // NOI18N
+        setTitle(bundle.getString("agencyManager")); // NOI18N
+
         jButton1.setText(bundle.getString("addAgent")); // NOI18N
 
         jButton2.setText(bundle.getString("changeAgentStatus")); // NOI18N
@@ -63,30 +64,10 @@ public class AgencyFrame extends javax.swing.JFrame {
 
         jButton4.setText(bundle.getString("changeMissionStatus")); // NOI18N
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+        jTable1.setModel(new AgentTableModel());
         jScrollPane1.setViewportView(jTable1);
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+        jTable2.setModel(new MissionTableModel());
         jScrollPane2.setViewportView(jTable2);
 
         jButton5.setText(bundle.getString("changeDate")); // NOI18N
@@ -133,17 +114,7 @@ public class AgencyFrame extends javax.swing.JFrame {
 
         jTabbedPane1.addTab(bundle.getString("agents"), jPanel1); // NOI18N
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
+        jTable3.setModel(new MissionTableModel());
         jScrollPane3.setViewportView(jTable3);
 
         jButton6.setText(bundle.getString("changeStatus")); // NOI18N
@@ -163,7 +134,7 @@ public class AgencyFrame extends javax.swing.JFrame {
                 .addComponent(jButton6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 21, Short.MAX_VALUE))
+                .addGap(0, 46, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab(bundle.getString("missions"), jPanel2); // NOI18N
