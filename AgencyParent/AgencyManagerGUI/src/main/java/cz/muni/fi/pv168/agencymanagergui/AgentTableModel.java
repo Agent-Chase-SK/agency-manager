@@ -9,10 +9,8 @@ import cz.muni.fi.pv168.agencymanager.common.Main;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.manager.AgentManager;
 import cz.muni.fi.pv168.agencymanager.manager.AgentManagerImpl;
-import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
 import java.io.IOException;
 import java.util.ResourceBundle;
-import java.util.function.Function;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -33,19 +31,16 @@ public class AgentTableModel extends AbstractTableModel {
     
     private enum Column {
         
-        CODENAME("codeName" , String.class, Agent::getCodeName),
-        STATUS("status" , AgentStatus.class, Agent::getStatus);
+        CODENAME("codeName" , String.class),
+        STATUS("status" , String.class);
         
         private final String label;
         private final Class<?> type;
-        private final Function<Agent,?> extractor;
         
 
-        private <T> Column(String label, Class<T> type, Function<Agent, T> extractor) {
+        private <T> Column(String label, Class<T> type) {
             this.label = label;
-            this.type = type;
-            this.extractor = extractor;
-            
+            this.type = type;            
         }
     }
 
@@ -61,8 +56,15 @@ public class AgentTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Agent currentAgent = manager.findAgentById(new Long(rowIndex));
-        return Column.values()[columnIndex].extractor.apply(currentAgent);
+        Agent currentAgent = manager.findAgentById(new Long(rowIndex+1));
+        switch (columnIndex) {
+            case 0:
+                return currentAgent.getCodeName();
+            case 1:
+                return bundle.getString(currentAgent.getStatus().toString());
+            default:
+                throw new IndexOutOfBoundsException("Invalid columnIndex: " + columnIndex);
+        }
     }
 
     @Override
@@ -75,4 +77,11 @@ public class AgentTableModel extends AbstractTableModel {
         return bundle.getString(Column.values()[column].label);
     }
     
+    public void insertedRow(int rowIndex) {
+        fireTableRowsInserted(rowIndex, rowIndex);
+    }
+    
+    public void updatedCell(int rowIndex, int columnIndex) {
+        fireTableCellUpdated(rowIndex, columnIndex);
+    }
 }

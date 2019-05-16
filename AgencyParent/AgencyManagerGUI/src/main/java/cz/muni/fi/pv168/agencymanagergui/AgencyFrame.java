@@ -5,17 +5,80 @@
  */
 package cz.muni.fi.pv168.agencymanagergui;
 
+import cz.muni.fi.pv168.agencymanager.common.Main;
+import cz.muni.fi.pv168.agencymanager.entity.Agent;
+import cz.muni.fi.pv168.agencymanager.manager.AgentManager;
+import cz.muni.fi.pv168.agencymanager.manager.AgentManagerImpl;
+import cz.muni.fi.pv168.agencymanager.manager.MissionManager;
+import cz.muni.fi.pv168.agencymanager.manager.MissionManagerImpl;
+import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.time.Clock;
+import java.util.ResourceBundle;
+import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.SwingWorker;
+import javax.swing.event.ListSelectionEvent;
+
 /**
  *
  * @author Jakub
  */
 public class AgencyFrame extends javax.swing.JFrame {
+    private final MissionManager missionManager;
+    private final AgentManager agentManager;
+    
+    private final AgentTableModel agentTableModel = new AgentTableModel();
+    private final MissionTableModel missionTableModel = new MissionTableModel();
+    
+    private boolean AGENT_SELECTED = false;
+    private final ResourceBundle bundle = java.util.ResourceBundle.getBundle("AgencyManager");
+    
+    private int selectedAgent;
+    private int selectedMission;
+    
+    final ToString toStringLoc = (final Object object) -> bundle.getString(object.toString());
 
     /**
      * Creates new form AgencyFrame
      */
     public AgencyFrame() {
+        try {
+            this.missionManager = new MissionManagerImpl(Main.getDataSource(), Clock.systemDefaultZone());
+            this.agentManager = new AgentManagerImpl(Main.getDataSource());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
         initComponents();
+        changeAgentStatusAction.setEnabled(false);
+        jTable1.getSelectionModel().addListSelectionListener((ListSelectionEvent event) -> {
+            if (!AGENT_SELECTED) {
+                changeAgentStatusAction.setEnabled(true);
+                AGENT_SELECTED = true;
+            }
+        });
+        jDialog1.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                changeAgentStatusAction.setEnabled(true);
+                jComboBox1.setSelectedItem(AgentStatus.ACTIVE);
+            }
+        });
+        jDialog2.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                addAgentAction.setEnabled(true);
+                jComboBox2.setSelectedItem(AgentStatus.ACTIVE);
+                jTextField1.setText("");
+            }
+        });
+        jComboBox1.setRenderer(new ToStringListCellRenderer(jComboBox1.getRenderer(), toStringLoc));
+        jComboBox2.setRenderer(new ToStringListCellRenderer(jComboBox2.getRenderer(), toStringLoc));
     }
 
     /**
@@ -27,6 +90,17 @@ public class AgencyFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jDialog1 = new javax.swing.JDialog();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jButton7 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jDialog2 = new javax.swing.JDialog();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jComboBox2 = new javax.swing.JComboBox<>();
+        jButton8 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
@@ -52,22 +126,123 @@ public class AgencyFrame extends javax.swing.JFrame {
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jDialog1.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jComboBox1.setModel(new DefaultComboBoxModel(AgentStatus.values()));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("AgencyManager"); // NOI18N
+        jButton7.setText(bundle.getString("changeStatus")); // NOI18N
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText(bundle.getString("changeStatusPrompt")); // NOI18N
+
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addGroup(jDialog1Layout.createSequentialGroup()
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton7)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jDialog1Layout.setVerticalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton7))
+                .addContainerGap())
+        );
+
+        jDialog2.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jLabel2.setText(bundle.getString("addAgentPrompt")); // NOI18N
+
+        jLabel3.setText(bundle.getString("codeName")); // NOI18N
+
+        jLabel4.setText(bundle.getString("status")); // NOI18N
+
+        jComboBox2.setModel(new DefaultComboBoxModel(AgentStatus.values()));
+
+        jButton8.setText(bundle.getString("add")); // NOI18N
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jDialog2Layout = new javax.swing.GroupLayout(jDialog2.getContentPane());
+        jDialog2.getContentPane().setLayout(jDialog2Layout);
+        jDialog2Layout.setHorizontalGroup(
+            jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel2)
+                    .addGroup(jDialog2Layout.createSequentialGroup()
+                        .addGroup(jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jDialog2Layout.createSequentialGroup()
+                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton8))
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jDialog2Layout.setVerticalGroup(
+            jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jDialog2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton8))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(bundle.getString("agencyManager")); // NOI18N
 
+        jButton1.setAction(addAgentAction);
         jButton1.setText(bundle.getString("addAgent")); // NOI18N
 
+        jButton2.setAction(changeAgentStatusAction);
         jButton2.setText(bundle.getString("changeAgentStatus")); // NOI18N
 
         jButton3.setText(bundle.getString("addMission")); // NOI18N
 
         jButton4.setText(bundle.getString("changeMissionStatus")); // NOI18N
 
-        jTable1.setModel(new AgentTableModel());
+        jTable1.setModel(agentTableModel);
         jScrollPane1.setViewportView(jTable1);
 
-        jTable2.setModel(new MissionTableModel());
+        jTable2.setModel(missionTableModel);
         jScrollPane2.setViewportView(jTable2);
 
         jButton5.setText(bundle.getString("changeDate")); // NOI18N
@@ -114,7 +289,7 @@ public class AgencyFrame extends javax.swing.JFrame {
 
         jTabbedPane1.addTab(bundle.getString("agents"), jPanel1); // NOI18N
 
-        jTable3.setModel(new MissionTableModel());
+        jTable3.setModel(missionTableModel);
         jScrollPane3.setViewportView(jTable3);
 
         jButton6.setText(bundle.getString("changeStatus")); // NOI18N
@@ -141,9 +316,11 @@ public class AgencyFrame extends javax.swing.JFrame {
 
         jMenu1.setText(bundle.getString("agent")); // NOI18N
 
+        jMenuItem1.setAction(addAgentAction);
         jMenuItem1.setText(bundle.getString("add")); // NOI18N
         jMenu1.add(jMenuItem1);
 
+        jMenuItem3.setAction(changeAgentStatusAction);
         jMenuItem3.setText(bundle.getString("changeStatus")); // NOI18N
         jMenu1.add(jMenuItem3);
 
@@ -180,6 +357,31 @@ public class AgencyFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        AgentStatus status = (AgentStatus) jComboBox1.getSelectedItem();
+        
+        changeAgentStatusWorker = new ChangeAgentStatusWorker(selectedAgent, status);
+        changeAgentStatusWorker.addPropertyChangeListener(progressListener);
+        changeAgentStatusWorker.execute();
+        
+        jDialog1.dispose();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        String codeName = jTextField1.getText();
+        AgentStatus status = (AgentStatus) jComboBox2.getSelectedItem();
+        
+        addAgentWorker = new AddAgentWorker(codeName, status);
+        addAgentWorker.addPropertyChangeListener(progressListener);
+        addAgentWorker.execute();
+        
+        jDialog2.dispose();
+    }//GEN-LAST:event_jButton8ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -214,6 +416,98 @@ public class AgencyFrame extends javax.swing.JFrame {
             }
         });
     }
+    
+    private class AddAgentAction extends AbstractAction {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            addAgentAction.setEnabled(false);
+            jDialog2.pack();
+            jDialog2.setVisible(true);
+        }
+        
+    }
+    
+    private class ChangeAgentStatusAction extends AbstractAction {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            changeAgentStatusAction.setEnabled(false);
+            jDialog1.pack();
+            jDialog1.setVisible(true);
+            selectedAgent = jTable1.getSelectedRow();
+        }
+        
+    }
+    
+    private final AddAgentAction addAgentAction = new AddAgentAction();
+    private final ChangeAgentStatusAction changeAgentStatusAction = new ChangeAgentStatusAction();
+    
+    private class ChangeAgentStatusWorker extends SwingWorker<Void, Void> {
+        private final int index;
+        private final AgentStatus status;
+
+        public ChangeAgentStatusWorker(int index, AgentStatus status) {
+            this.index = index;
+            this.status = status;
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            Agent agent = agentManager.findAgentById(new Long(index+1));
+            setProgress(50);
+            agent.setStatus(status);
+            agentManager.updateAgent(agent);
+            setProgress(100);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            changeAgentStatusAction.setEnabled(true);
+            changeAgentStatusWorker = null;
+            agentTableModel.updatedCell(index, 1);
+        }
+        
+    }
+    
+    private class AddAgentWorker extends SwingWorker<Void, Void> {
+        private Agent agent;
+
+        public AddAgentWorker(String codeName, AgentStatus status) {
+            agent = new Agent();
+            agent.setCodeName(codeName);
+            agent.setStatus(status);
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            agentManager.createAgent(agent);
+            setProgress(100);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            addAgentAction.setEnabled(true);
+            addAgentWorker = null;
+            agentTableModel.insertedRow(Math.toIntExact(agent.getId())-1);
+        }
+        
+    }
+    
+    private ChangeAgentStatusWorker changeAgentStatusWorker;
+    private AddAgentWorker addAgentWorker;
+    
+    private PropertyChangeListener progressListener = new PropertyChangeListener() {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (evt.getPropertyName().equals("progress")) {
+                jProgressBar1.setValue((Integer) evt.getNewValue());
+            }
+        }
+    };
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -222,6 +516,16 @@ public class AgencyFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JDialog jDialog1;
+    private javax.swing.JDialog jDialog2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -240,5 +544,6 @@ public class AgencyFrame extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

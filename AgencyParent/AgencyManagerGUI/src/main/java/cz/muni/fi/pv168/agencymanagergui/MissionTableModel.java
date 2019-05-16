@@ -11,7 +11,6 @@ import cz.muni.fi.pv168.agencymanager.manager.AgentManager;
 import cz.muni.fi.pv168.agencymanager.manager.AgentManagerImpl;
 import cz.muni.fi.pv168.agencymanager.manager.MissionManager;
 import cz.muni.fi.pv168.agencymanager.manager.MissionManagerImpl;
-import cz.muni.fi.pv168.agencymanager.status.MissionStatus;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -43,7 +42,7 @@ public class MissionTableModel extends AbstractTableModel {
     private enum Column {
         
         CODENAME("codeName", String.class),
-        STATUS("status", MissionStatus.class),
+        STATUS("status", String.class),
         DATE("date", LocalDate.class),
         LOCATION("location", String.class),
         AGENT("agent", String.class);
@@ -69,12 +68,12 @@ public class MissionTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Mission currentMission = missionManager.findMissionById(new Long(rowIndex));
+        Mission currentMission = missionManager.findMissionById(new Long(rowIndex+1));
         switch (columnIndex) {
             case 0:
                 return currentMission.getCodeName();
             case 1:
-                return currentMission.getStatus();
+                return bundle.getString(currentMission.getStatus().toString());
             case 2:
                 return currentMission.getDate();
             case 3:
@@ -96,4 +95,11 @@ public class MissionTableModel extends AbstractTableModel {
         return bundle.getString(Column.values()[column].label);
     }
     
+    public void insertedRow(int rowIndex) {
+        fireTableRowsInserted(rowIndex, rowIndex);
+    }
+    
+    public void updatedCell(int rowIndex, int columnIndex) {
+        fireTableCellUpdated(rowIndex, columnIndex);
+    }
 }
