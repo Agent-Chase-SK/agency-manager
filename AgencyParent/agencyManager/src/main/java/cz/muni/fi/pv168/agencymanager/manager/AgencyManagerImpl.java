@@ -8,6 +8,9 @@ import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.entity.Mission;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +26,8 @@ import javax.sql.DataSource;
 public class AgencyManagerImpl implements AgencyManager {
     private final DataSource ds;
 
+    private final static Logger LOG = LoggerFactory.getLogger(AgencyManagerImpl.class);
+
     public AgencyManagerImpl(DataSource ds) {
         if (ds == null) {
             throw new IllegalArgumentException("data source is null");
@@ -32,6 +37,7 @@ public class AgencyManagerImpl implements AgencyManager {
 
     @Override
     public List<Mission> findMissionsWithAgent(Agent agent) {
+        LOG.debug("Starting findMissionsWithAgent");
         if (agent == null) throw new ValidationException("agent is null");
         if (agent.getId() == null) throw new ValidationException("agent id is null");
 
@@ -45,16 +51,19 @@ public class AgencyManagerImpl implements AgencyManager {
                 while (rs.next()) {
                     result.add(MissionManagerImpl.dataToMission(rs));
                 }
+                LOG.debug("findMissionsWithAgent ended successful");
                 return result;
             }
             
         } catch (SQLException ex) {
+            LOG.debug("findMissionsWithAgent not ended successfully");
             throw new ServiceException("Error when trying to find missions with agent " + agent, ex);
         }
     }
 
     @Override
     public Agent findAgentOnMission(Mission mission) {
+        LOG.debug("Starting findAgentOnMission");
         if (mission == null) throw new ValidationException("mission is null");
         if (mission.getId() == null) throw new ValidationException("mission id is null");
 
@@ -67,19 +76,23 @@ public class AgencyManagerImpl implements AgencyManager {
             
             try (ResultSet rs = st.executeQuery()) {
                 if(rs.next()){
+                    LOG.debug("findAgentOnMission ended successful with not null result ");
                     return AgentManagerImpl.dataToAgent(rs);
                 } else {
+                    LOG.debug("findAgentOnMission ended successful with null result ");
                     return null;
                 }
             }
             
         } catch (SQLException ex) {
+            LOG.debug("findAgentOnMission not ended successfully");
             throw new ServiceException("Error when trying to find agent on mission " + mission, ex);
         }
     }
 
     @Override
     public void assignAgentToMission(Agent agent, Mission mission) {
+        LOG.debug("Starting assignAgentToMission");
         if (mission == null) throw new ValidationException("mission is null");
         if (mission.getId() == null) throw new ValidationException("mission id is null");
         if (agent == null) throw new ValidationException("agent is null");
@@ -99,10 +112,12 @@ public class AgencyManagerImpl implements AgencyManager {
             
             int result = st.executeUpdate();
             if(result != 1) throw new ServiceException("updated " + result + " instead of 1 mission when asigning agent " + agent);
-            
+
             mission.setAgentId(agent.getId());
+            LOG.debug("assignAgentToMission ended successfully");
             
         } catch (SQLException ex) {
+            LOG.debug("assignAgentToMission not ended successfully");
             throw new ServiceException("Error when trying to assign agent " + agent + " to mission " + mission, ex);
         }
     }

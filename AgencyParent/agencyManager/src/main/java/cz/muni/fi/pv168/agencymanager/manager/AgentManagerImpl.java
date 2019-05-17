@@ -5,6 +5,9 @@ import cz.muni.fi.pv168.agencymanager.common.ServiceException;
 import cz.muni.fi.pv168.agencymanager.common.ValidationException;
 import cz.muni.fi.pv168.agencymanager.entity.Agent;
 import cz.muni.fi.pv168.agencymanager.status.AgentStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +23,8 @@ import javax.sql.DataSource;
  */
 public class AgentManagerImpl implements AgentManager {
     private DataSource ds;
+
+    private final static Logger LOG = LoggerFactory.getLogger(AgentManagerImpl.class);
 
     public AgentManagerImpl(DataSource ds) {
         if (ds == null) {
@@ -50,6 +55,7 @@ public class AgentManagerImpl implements AgentManager {
     
     @Override
     public void createAgent(Agent agent) {
+        LOG.debug("Starting createAgent");
         validate(agent);
         if (agent.getId() != null) {
             throw new ValidationException("agent has assigned id");
@@ -68,6 +74,7 @@ public class AgentManagerImpl implements AgentManager {
                 if(keys.next()) {
                     Long id = keys.getLong(1);
                     agent.setId(id);
+                    LOG.debug("createAgent ended successfully");
                 }
             }
         } catch(SQLException ex) {
@@ -77,6 +84,7 @@ public class AgentManagerImpl implements AgentManager {
 
     @Override
     public void updateAgent(Agent agent) {
+        LOG.debug("Starting updateAgent");
         validate(agent);
         if (agent.getId() == null) {
             throw new ValidationException("agent has null id");
@@ -94,6 +102,7 @@ public class AgentManagerImpl implements AgentManager {
             if(result != 1) {
                 throw new ServiceException("updated " + result + " instead of 1 agent");
             }
+            LOG.debug("updateAgent ended successfully");
         } catch (SQLException ex) {
             throw new ServiceException("update agent failure", ex);
         }
@@ -101,6 +110,7 @@ public class AgentManagerImpl implements AgentManager {
 
     @Override
     public Agent findAgentById(Long id) {
+        LOG.debug("Starting findAgentById");
         if(id == null){
             throw new ValidationException("Id is null");
         }
@@ -111,6 +121,7 @@ public class AgentManagerImpl implements AgentManager {
             st.setLong(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if(rs.next()){
+                    LOG.debug("findAgentById ended successfully");
                     return dataToAgent(rs);
                 } else {
                     return null;
@@ -123,6 +134,7 @@ public class AgentManagerImpl implements AgentManager {
 
     @Override
     public List<Agent> findAllAgents() {
+        LOG.debug("Starting findAllAgents");
         try(Connection connection = ds.getConnection();
             PreparedStatement st = connection.prepareStatement(
                     "SELECT id, codeName, status FROM Agent")){
@@ -131,6 +143,7 @@ public class AgentManagerImpl implements AgentManager {
                 while (rs.next()) {
                     result.add(dataToAgent(rs));
                 }
+                LOG.debug("findAllAgents ended successfully");
                 return result;
             }
         } catch (SQLException e) {
