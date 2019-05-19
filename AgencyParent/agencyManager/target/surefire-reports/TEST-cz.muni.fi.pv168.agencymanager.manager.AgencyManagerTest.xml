@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="6" failures="0" name="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" time="2.072" errors="0" skipped="0">
+<testsuite tests="6" failures="0" name="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" time="1.808" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0_181\jre\bin"/>
     <property name="java.vm.version" value="25.181-b13"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
-    <property name="maven.multiModuleProjectDirectory" value="C:\Users\Jakub\Desktop\tmp\AgencyParent"/>
+    <property name="maven.multiModuleProjectDirectory" value="C:\Users\Jakub\Desktop\Skola\Seminar_z_javy\pv168---agency-manager\AgencyParent"/>
     <property name="java.vendor.url" value="http://java.oracle.com/"/>
     <property name="path.separator" value=";"/>
     <property name="guice.disable.misplaced.annotation.check" value="true"/>
@@ -16,7 +16,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="C:\Users\Jakub\Desktop\tmp\AgencyParent"/>
+    <property name="user.dir" value="C:\Users\Jakub\Desktop\Skola\Seminar_z_javy\pv168---agency-manager\AgencyParent"/>
     <property name="java.runtime.version" value="1.8.0_181-b13"/>
     <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
     <property name="java.endorsed.dirs" value="C:\Program Files\Java\jdk1.8.0_181\jre\lib\endorsed"/>
@@ -62,10 +62,10 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="assignAgentToMissionTest" time="1.481"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="assignAgentToMissionNullMission" time="0.094"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="assignAgentToMissionNullAgent" time="0.089"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="testFindAgentOnMissionNullMission" time="0.063"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="findMissionsWithAgentTest" time="0.285"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="testFindMissionsWithAgentNullAgent" time="0.06"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="assignAgentToMissionTest" time="1.459"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="assignAgentToMissionNullMission" time="0.056"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="assignAgentToMissionNullAgent" time="0.054"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="testFindAgentOnMissionNullMission" time="0.04"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="findMissionsWithAgentTest" time="0.161"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgencyManagerTest" name="testFindMissionsWithAgentNullAgent" time="0.038"/>
 </testsuite>

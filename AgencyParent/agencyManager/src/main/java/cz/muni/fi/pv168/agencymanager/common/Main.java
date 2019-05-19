@@ -28,10 +28,10 @@ public class Main {
         ds.setUsername(p.getProperty("jdbc.user"));
         ds.setPassword(p.getProperty("jdbc.password"));
         //populate db with tables and data
-        new ResourceDatabasePopulator(
+        /*new ResourceDatabasePopulator(
                 new ClassPathResource("schema-javadb.sql"),
                 new ClassPathResource("test-data.sql"))
-                .execute(ds);
+                .execute(ds);*/
         return ds;
     }
 

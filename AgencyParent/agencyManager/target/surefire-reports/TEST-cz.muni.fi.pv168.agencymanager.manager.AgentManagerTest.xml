@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="17" failures="0" name="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" time="0.713" errors="0" skipped="0">
+<testsuite tests="17" failures="0" name="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" time="0.631" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0_181\jre\bin"/>
     <property name="java.vm.version" value="25.181-b13"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
-    <property name="maven.multiModuleProjectDirectory" value="C:\Users\Jakub\Desktop\tmp\AgencyParent"/>
+    <property name="maven.multiModuleProjectDirectory" value="C:\Users\Jakub\Desktop\Skola\Seminar_z_javy\pv168---agency-manager\AgencyParent"/>
     <property name="java.vendor.url" value="http://java.oracle.com/"/>
     <property name="path.separator" value=";"/>
     <property name="guice.disable.misplaced.annotation.check" value="true"/>
@@ -16,7 +16,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="C:\Users\Jakub\Desktop\tmp\AgencyParent"/>
+    <property name="user.dir" value="C:\Users\Jakub\Desktop\Skola\Seminar_z_javy\pv168---agency-manager\AgencyParent"/>
     <property name="java.runtime.version" value="1.8.0_181-b13"/>
     <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
     <property name="java.endorsed.dirs" value="C:\Program Files\Java\jdk1.8.0_181\jre\lib\endorsed"/>
@@ -62,21 +62,21 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNullName" time="0.049"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentStatus" time="0.09"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentCreatesCopy" time="0.075"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentNullStatus" time="0.055"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentCodeName" time="0.068"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAllAgentsAllAndSame" time="0.039"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentGotId" time="0.027"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentNullName" time="0.025"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNullStatus" time="0.034"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentWithId" time="0.026"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAgentByIdReturnRightOne" time="0.047"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNullAgent" time="0.031"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAllAgentsEmpty" time="0.03"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAgentByIdWrongId" time="0.034"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNullName" time="0.031"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentStatus" time="0.062"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentCreatesCopy" time="0.052"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentNullStatus" time="0.027"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentCodeName" time="0.047"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAllAgentsAllAndSame" time="0.038"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentGotId" time="0.025"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentNullName" time="0.024"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNullStatus" time="0.037"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentWithId" time="0.037"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAgentByIdReturnRightOne" time="0.052"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNullAgent" time="0.027"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAllAgentsEmpty" time="0.037"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAgentByIdWrongId" time="0.035"/>
   <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testCreateAgentNullAgent" time="0.027"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAgentByIdNullId" time="0.023"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNotCreated" time="0.033"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testFindAgentByIdNullId" time="0.026"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.AgentManagerTest" name="testUpdateAgentNotCreated" time="0.047"/>
 </testsuite>
