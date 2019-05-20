@@ -9,7 +9,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.ResourceBundle;
+import org.springframework.jdbc.datasource.init.ScriptException;
 
 public class Main {
 
@@ -28,10 +28,13 @@ public class Main {
         ds.setUsername(p.getProperty("jdbc.user"));
         ds.setPassword(p.getProperty("jdbc.password"));
         //populate db with tables and data
-        /*new ResourceDatabasePopulator(
-                new ClassPathResource("schema-javadb.sql"),
-                new ClassPathResource("test-data.sql"))
-                .execute(ds);*/
+        try {
+            new ResourceDatabasePopulator(
+                new ClassPathResource("schema-javadb.sql")/*,
+                new ClassPathResource("test-data.sql")*/)
+                .execute(ds);
+        } catch (ScriptException e) {
+        }
         return ds;
     }
 
