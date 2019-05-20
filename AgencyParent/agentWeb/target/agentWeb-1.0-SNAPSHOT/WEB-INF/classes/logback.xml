@@ -18,5 +18,6 @@
     <logger name="cz.muni.fi.pv168" level="info"/>
     <logger name="cz.muni.fi.pv168.agentweb" level="debug"/>
     <logger name="cz.muni.fi.pv168.agencymanager" level="debug"/>
+    <logger name="cz.muni.fi.pv168.agencymanagergui" level="debug"/>
  
 </configuration>

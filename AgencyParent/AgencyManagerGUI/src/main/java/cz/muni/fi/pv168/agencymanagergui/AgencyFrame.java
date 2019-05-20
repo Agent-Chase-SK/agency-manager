@@ -32,6 +32,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -52,6 +54,8 @@ public class AgencyFrame extends javax.swing.JFrame {
     private int selectedAgent1;
     private int selectedAgent2;
     private int selectedMission;
+    
+    private final static Logger LOG = LoggerFactory.getLogger(AgencyFrame.class);
     
     final ToString toStringLoc = (final Object object) -> bundle.getString(object.toString());
 
@@ -148,6 +152,8 @@ public class AgencyFrame extends javax.swing.JFrame {
         jDialogAddMission.pack();
         jDialogAgentStatus.pack();
         jDialogMissionStatus.pack();
+        
+        LOG.info("Initialized components");
     }
 
     /**
@@ -688,22 +694,16 @@ public class AgencyFrame extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AgencyFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AgencyFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AgencyFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AgencyFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            LOG.error("Error in AgencyFrame", ex);
         }
+        //</editor-fold>
+        
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AgencyFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new AgencyFrame().setVisible(true);
         });
     }
     

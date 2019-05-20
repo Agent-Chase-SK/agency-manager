@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="32" failures="0" name="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" time="1.254" errors="0" skipped="0">
+<testsuite tests="32" failures="0" name="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" time="1.38" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0_181\jre\bin"/>
@@ -62,36 +62,36 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionWithId" time="0.04"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionDate" time="0.114"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionWithId" time="0.019"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionDate" time="0.096"/>
   <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindAllMissionsEmpty" time="0.024"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindAllMissionsAllAndSame" time="0.045"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNotScheduledYesterday" time="0.027"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullMission" time="0.021"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullStatus" time="0.06"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullDate" time="0.07"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullName" time="0.032"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullAgentId" time="0.091"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionScheduledTomorrow" time="0.069"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNotScheduledInPast" time="0.038"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindMissionByIdNullId" time="0.02"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullStatus" time="0.026"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionAgentId" time="0.044"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionScheduledYesterday" time="0.023"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionScheduledInFuture" time="0.02"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionLocation" time="0.052"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionCreatesCopy" time="0.041"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullDate" time="0.042"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullName" time="0.024"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionGotId" time="0.028"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionStatus" time="0.049"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindMissionByIdReturnRightOne" time="0.038"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullAgentId" time="0.024"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullLocation" time="0.024"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionCodeName" time="0.032"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullLocation" time="0.028"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullMission" time="0.017"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNotScheduledTomorrow" time="0.029"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNotCreated" time="0.031"/>
-  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindMissionByIdWrongId" time="0.031"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindAllMissionsAllAndSame" time="0.043"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNotScheduledYesterday" time="0.041"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullMission" time="0.04"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullStatus" time="0.048"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullDate" time="0.052"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullName" time="0.041"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullAgentId" time="0.033"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionScheduledTomorrow" time="0.031"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNotScheduledInPast" time="0.041"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindMissionByIdNullId" time="0.026"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullStatus" time="0.036"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionAgentId" time="0.054"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionScheduledYesterday" time="0.031"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionScheduledInFuture" time="0.021"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionLocation" time="0.055"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionCreatesCopy" time="0.033"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullDate" time="0.033"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullName" time="0.026"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionGotId" time="0.022"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionStatus" time="0.041"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindMissionByIdReturnRightOne" time="0.099"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullAgentId" time="0.01"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testCreateMissionNullLocation" time="0.029"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionCodeName" time="0.108"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullLocation" time="0.072"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNullMission" time="0.026"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNotScheduledTomorrow" time="0.073"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testUpdateMissionNotCreated" time="0.042"/>
+  <testcase classname="cz.muni.fi.pv168.agencymanager.manager.MissionManagerTest" name="testFindMissionByIdWrongId" time="0.034"/>
 </testsuite>
