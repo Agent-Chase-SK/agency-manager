@@ -325,6 +325,8 @@ public class AgencyFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jDialogAddMission.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
         jLabel5.setText(bundle.getString("addMissionPrompt")); // NOI18N
 
         jLabel6.setText(bundle.getString("codeName")); // NOI18N
@@ -420,6 +422,8 @@ public class AgencyFrame extends javax.swing.JFrame {
                     .addComponent(jLabelWarnT4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
+
+        jDialogMissionStatus.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel10.setText(bundle.getString("changeMissionStatusPrompt")); // NOI18N
 

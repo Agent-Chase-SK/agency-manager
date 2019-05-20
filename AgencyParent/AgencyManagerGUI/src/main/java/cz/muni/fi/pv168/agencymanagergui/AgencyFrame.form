@@ -181,6 +181,9 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JDialog" name="jDialogAddMission">
+      <Properties>
+        <Property name="defaultCloseOperation" type="int" value="2"/>
+      </Properties>
 
       <Layout>
         <DimensionLayout dim="0">
@@ -398,6 +401,9 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JDialog" name="jDialogMissionStatus">
+      <Properties>
+        <Property name="defaultCloseOperation" type="int" value="2"/>
+      </Properties>
 
       <Layout>
         <DimensionLayout dim="0">
