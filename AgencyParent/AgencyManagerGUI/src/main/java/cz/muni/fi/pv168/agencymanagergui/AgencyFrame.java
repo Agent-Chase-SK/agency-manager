@@ -49,6 +49,8 @@ public class AgencyFrame extends javax.swing.JFrame {
     private boolean agentSelectedBool = false;
     private boolean missionSelectedBool1 = false;
     private boolean missionSelectedBool2 = false;
+    private boolean addMiosionActive = false;
+    private boolean changeMissionStatusActive = false;
     private final ResourceBundle bundle = java.util.ResourceBundle.getBundle("AgencyManager");
     
     private int selectedAgent1;
@@ -82,10 +84,10 @@ public class AgencyFrame extends javax.swing.JFrame {
         });
         jTabbedPane1.addChangeListener((ChangeEvent e) -> {
             if (jTabbedPane1.getSelectedIndex() == 0) {
-                changeMissionStatusAction.setEnabled(missionSelectedBool1);
-                addMissionAction.setEnabled(agentSelectedBool);
+                changeMissionStatusAction.setEnabled(missionSelectedBool1 && !changeMissionStatusActive);
+                addMissionAction.setEnabled(agentSelectedBool && !addMiosionActive);
             } else {
-                changeMissionStatusAction.setEnabled(missionSelectedBool2);
+                changeMissionStatusAction.setEnabled(missionSelectedBool2 && !changeMissionStatusActive);
                 addMissionAction.setEnabled(false);
             }
         });
@@ -133,6 +135,7 @@ public class AgencyFrame extends javax.swing.JFrame {
                 jLabelWarnT2.setText("");
                 jLabelWarnT3.setText("");
                 jLabelWarnT4.setText("");
+                addMiosionActive = false;
             }
         });
         jDialogMissionStatus.addWindowListener(new WindowAdapter() {
@@ -140,6 +143,7 @@ public class AgencyFrame extends javax.swing.JFrame {
             public void windowClosed(WindowEvent e) {
                 changeMissionStatusAction.setEnabled(true);
                 jComboBox6.setSelectedItem(AgentStatus.ACTIVE);
+                changeMissionStatusActive = false;
             }
         });
         jComboBox1.setRenderer(new ToStringListCellRenderer(jComboBox1.getRenderer(), toStringLoc));
@@ -737,6 +741,7 @@ public class AgencyFrame extends javax.swing.JFrame {
             addMissionAction.setEnabled(false);
             jDialogAddMission.setVisible(true);
             selectedAgent2 = jTable1.getSelectedRow();
+            addMiosionActive = true;
         }
     }
     
@@ -751,6 +756,7 @@ public class AgencyFrame extends javax.swing.JFrame {
             } else {
                 selectedMission = jTable3.getSelectedRow();
             }
+            changeMissionStatusActive = true;
         }
     }
     
@@ -839,6 +845,7 @@ public class AgencyFrame extends javax.swing.JFrame {
             addMissionAction.setEnabled(true);
             addMissionWorker = null;
             missionTableModel.insertedRow(Math.toIntExact(mission.getId())-1);
+            addMiosionActive = false;
         }
         
     }
@@ -877,6 +884,7 @@ public class AgencyFrame extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, bundle.getString("warnStatDate"));
             }
+            changeMissionStatusActive = false;
         }
         
     }
