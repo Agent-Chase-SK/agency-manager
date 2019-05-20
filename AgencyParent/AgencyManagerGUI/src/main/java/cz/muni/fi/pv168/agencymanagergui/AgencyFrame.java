@@ -630,6 +630,10 @@ public class AgencyFrame extends javax.swing.JFrame {
             jLabelWarnT3.setText(bundle.getString("warnYearNotInt"));
             return;
         }
+        if (year <= 0) {
+            jLabelWarnT3.setText(bundle.getString("warnYearNotInt"));
+            return;
+        }
         LocalDate date;
         try {
             date = LocalDate.of(year,month,day);
