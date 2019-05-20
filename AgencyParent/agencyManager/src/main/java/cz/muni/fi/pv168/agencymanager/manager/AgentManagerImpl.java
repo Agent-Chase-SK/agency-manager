@@ -28,6 +28,7 @@ public class AgentManagerImpl implements AgentManager {
 
     public AgentManagerImpl(DataSource ds) {
         if (ds == null) {
+            LOG.error("AgentManagerImpl -> data source is null");
             throw new IllegalArgumentException("data source is null");
         }
         this.ds = ds;
@@ -35,12 +36,15 @@ public class AgentManagerImpl implements AgentManager {
     
     private void validate(Agent agent) {
         if (agent == null) {
+            LOG.error("Validate -> agent is null");
             throw new ValidationException("agent is null");
         }
         if (agent.getCodeName() == null) {
+            LOG.error("Validate -> agent codename is null");
             throw new ValidationException("agent codename is null");
         }
         if (agent.getStatus() == null) {
+            LOG.error("Validate -> agent status is null");
             throw new ValidationException("agent status is null");
         }
     }
@@ -58,6 +62,7 @@ public class AgentManagerImpl implements AgentManager {
         LOG.debug("Starting createAgent");
         validate(agent);
         if (agent.getId() != null) {
+            LOG.error("agent has assigned id");
             throw new ValidationException("agent has assigned id");
         }
         
@@ -78,6 +83,7 @@ public class AgentManagerImpl implements AgentManager {
                 }
             }
         } catch(SQLException ex) {
+            LOG.error("create agent failure", ex);
             throw new ServiceException("create agent failure", ex);
         }
     }
@@ -87,6 +93,7 @@ public class AgentManagerImpl implements AgentManager {
         LOG.debug("Starting updateAgent");
         validate(agent);
         if (agent.getId() == null) {
+            LOG.error("agent has null id");
             throw new ValidationException("agent has null id");
         }
         
@@ -100,10 +107,12 @@ public class AgentManagerImpl implements AgentManager {
 
             int result = sta.executeUpdate();
             if(result != 1) {
+                LOG.error("updated " + result + " instead of 1 agent");
                 throw new ServiceException("updated " + result + " instead of 1 agent");
             }
             LOG.debug("updateAgent ended successfully");
         } catch (SQLException ex) {
+            LOG.error("update agent failure", ex);
             throw new ServiceException("update agent failure", ex);
         }
     }
@@ -112,6 +121,7 @@ public class AgentManagerImpl implements AgentManager {
     public Agent findAgentById(Long id) {
         LOG.debug("Starting findAgentById");
         if(id == null){
+            LOG.error("Id is null");
             throw new ValidationException("Id is null");
         }
 
@@ -128,7 +138,8 @@ public class AgentManagerImpl implements AgentManager {
                 }
             }
         } catch (SQLException e) {
-            throw new ServiceException("Error when getting all agents from DB0", e);
+            LOG.error("Error when getting all agents from DB", e);
+            throw new ServiceException("Error when getting all agents from DB", e);
         }
     }
 
@@ -147,7 +158,8 @@ public class AgentManagerImpl implements AgentManager {
                 return result;
             }
         } catch (SQLException e) {
-            throw new ServiceException("Error when getting all agents from DB0", e);
+            LOG.error("Error when getting all agents from DB", e);
+            throw new ServiceException("Error when getting all agents from DB", e);
         }
     }
 

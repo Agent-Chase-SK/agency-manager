@@ -30,6 +30,7 @@ public class AgencyManagerImpl implements AgencyManager {
 
     public AgencyManagerImpl(DataSource ds) {
         if (ds == null) {
+            LOG.error("Agency Manager Impl -> data source is null");
             throw new IllegalArgumentException("data source is null");
         }
         this.ds = ds;
@@ -64,8 +65,14 @@ public class AgencyManagerImpl implements AgencyManager {
     @Override
     public Agent findAgentOnMission(Mission mission) {
         LOG.debug("Starting findAgentOnMission");
-        if (mission == null) throw new ValidationException("mission is null");
-        if (mission.getId() == null) throw new ValidationException("mission id is null");
+        if (mission == null){
+            LOG.error("findAgentOnMission not ended successfully");
+            throw new ValidationException("mission is null");
+        }
+        if (mission.getId() == null){
+            LOG.error("findAgentOnMission not ended successfully");
+            throw new ValidationException("mission id is null");
+        }
 
         try (Connection con = ds.getConnection();
              PreparedStatement st = con.prepareStatement(
@@ -85,7 +92,7 @@ public class AgencyManagerImpl implements AgencyManager {
             }
             
         } catch (SQLException ex) {
-            LOG.debug("findAgentOnMission not ended successfully");
+            LOG.error("findAgentOnMission not ended successfully", ex);
             throw new ServiceException("Error when trying to find agent on mission " + mission, ex);
         }
     }
@@ -93,10 +100,22 @@ public class AgencyManagerImpl implements AgencyManager {
     @Override
     public void assignAgentToMission(Agent agent, Mission mission) {
         LOG.debug("Starting assignAgentToMission");
-        if (mission == null) throw new ValidationException("mission is null");
-        if (mission.getId() == null) throw new ValidationException("mission id is null");
-        if (agent == null) throw new ValidationException("agent is null");
-        if (agent.getId() == null) throw new ValidationException("agent id is null");
+        if (mission == null){
+            LOG.error("mission is null");
+            throw new ValidationException("mission is null");
+        }
+        if (mission.getId() == null){
+            LOG.error("mission id is null");
+            throw new ValidationException("mission id is null");
+        }
+        if (agent == null){
+            LOG.error("agent is null");
+            throw new ValidationException("agent is null");
+        }
+        if (agent.getId() == null){
+            LOG.error("agent id is null");
+            throw new ValidationException("agent id is null");
+        }
 
         try (Connection con = ds.getConnection();
              PreparedStatement st = con.prepareStatement(
@@ -117,7 +136,7 @@ public class AgencyManagerImpl implements AgencyManager {
             LOG.debug("assignAgentToMission ended successfully");
             
         } catch (SQLException ex) {
-            LOG.debug("assignAgentToMission not ended successfully");
+            LOG.error("assignAgentToMission not ended successfully", ex);
             throw new ServiceException("Error when trying to assign agent " + agent + " to mission " + mission, ex);
         }
     }

@@ -37,8 +37,14 @@ public class MissionManagerImpl implements MissionManager {
     public void createMission(Mission mission) {
         LOG.debug("Starting createMission");
         validate(mission);
-        if (mission.getId() != null) throw new ValidationException("mission id is already set");
-        if (mission.getAgentId() == null) throw new ValidationException("agent is not set");
+        if (mission.getId() != null){
+            LOG.error("mission id is already set");
+            throw new ValidationException("mission id is already set");
+        }
+        if (mission.getAgentId() == null){
+            LOG.error("agent is not set");
+            throw new ValidationException("agent is not set");
+        }
 
         try(Connection conn = dataSource.getConnection();
             PreparedStatement st = conn.prepareStatement(
@@ -61,6 +67,7 @@ public class MissionManagerImpl implements MissionManager {
             }
 
         } catch (SQLException e) {
+            LOG.error("Error when inserting mission into DB",e);
             throw new ServiceException("Error when inserting mission into DB",e);
         }
     }
@@ -69,8 +76,14 @@ public class MissionManagerImpl implements MissionManager {
     public void updateMission(Mission mission) {
         LOG.debug("Starting updateMission");
         validate(mission);
-        if (mission.getAgentId() == null) throw new ValidationException("agentId is null");
-        if (mission.getId() == null) throw new ValidationException("mission id is null");
+        if (mission.getAgentId() == null){
+            LOG.error("agent id is null");
+            throw new ValidationException("agent id is null");
+        }
+        if (mission.getId() == null){
+            LOG.error("mission is null");
+            throw new ValidationException("mission id is null");
+        }
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(
                     "UPDATE Mission SET codeName = ?, status = ?, date = ?, location = ?, agentID = ?" +
@@ -85,6 +98,7 @@ public class MissionManagerImpl implements MissionManager {
             if(result != 1) throw new ServiceException("updated " + result + " instead of 1 mission");
             LOG.debug("updateMission ended successfully");
         } catch (SQLException e) {
+            LOG.error("Error when updating mission in the DB",e);
             throw new ServiceException("Error when updating mission in the DB",e);
         }
 
@@ -94,6 +108,7 @@ public class MissionManagerImpl implements MissionManager {
     public Mission findMissionById(Long id) {
         LOG.debug("Starting updateMission");
         if(id == null){
+            LOG.error("Id is null");
             throw new ValidationException("Id is null");
         }
 
@@ -111,6 +126,7 @@ public class MissionManagerImpl implements MissionManager {
                 }
             }
         } catch (SQLException e) {
+            LOG.error("Error when getting mission with id = " + id, e);
             throw new ServiceException("Error when getting mission with id = " + id, e);
         }
     }
@@ -130,6 +146,7 @@ public class MissionManagerImpl implements MissionManager {
                 return result;
             }
         } catch (SQLException e) {
+            LOG.error("Error when getting all missions from DB", e);
             throw new ServiceException("Error when getting all missions from DB", e);
         }
 
